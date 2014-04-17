@@ -7,7 +7,6 @@ This project rocks and uses MIT-LICENSE.
 add the following to your Gemfile:
 
      gem 'generic_people_rails', git: 'git@git.opuslogica.com:generic_people_rails.git', branch: :master
-     gem 'foreigner'
 
 Mount the engine/install the gem:
 
