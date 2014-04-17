@@ -9,6 +9,16 @@ class Credential < ActiveRecord::Base
     self.where(email_id: email_id, password: password).first if email_id
   end
 
+  def self.sign_up(hash)
+    self.create(hash)
+  end
+
+  def self.authenticate_oauth(hash)
+    email_id = Email.find_or_create_by(:address => hash[:email]).id
+    c = self.find_by(email_id:email_id, provider: hash[:provider] , uid: hash[:uid])
+    c ||= self.create(email_id:email_id, provider: hash[:provider], uid: hash[:uid], password: SecureRandom.hex(30))
+  end
+
   def can(name)
     self.permissions.where(permission_label: PermissionLabel.get(name)).first
   end
