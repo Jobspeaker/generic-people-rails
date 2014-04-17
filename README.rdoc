@@ -1,3 +1,22 @@
 = GenericPeopleRails
 
 This project rocks and uses MIT-LICENSE.
+
+== INSTALL
+
+add the following to your Gemfile:
+
+     gem 'generic_people_rails', git: 'git@git.opuslogica.com:generic_people_rails.git', branch: :master
+     gem 'foreigner'
+
+Mount the engine/install the gem:
+
+     rails g geneirc_people_rails:install
+
+And finally, migrate your database:
+
+     rake db:migrate
+
+This will install all the table GenericPeopleRails needs.
+
+
