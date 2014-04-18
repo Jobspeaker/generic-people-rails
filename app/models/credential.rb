@@ -5,12 +5,17 @@ class Credential < ActiveRecord::Base
   has_many :api_tokens
 
   def self.authenticate(email, password)
-    email_id = Email.find_by_address(email).id
+    email_object = Email.find_by_address(email)
+    email_id = email_object.id if email_object
     self.where(email_id: email_id, password: password).first if email_id
   end
 
-  def self.sign_up(hash)
-    self.create(hash)
+  def self.sign_up(email_address,password,hash = {})
+    email_object = Email.find_by_address(email_address)
+    return authenticate(email_address,password) if email_object && self.where(email_id: email_object.id).length
+
+    email = Email.find_or_create_by(address: email_address)
+    self.create(email: email,password: password)
   end
 
   def self.authenticate_oauth(hash)
