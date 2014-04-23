@@ -8,6 +8,7 @@ class CreateAddresses < ActiveRecord::Migration
       t.string :state
       t.string :postal
       t.string :country
+      t.boolean :confirmed, default: false
 
       t.timestamps
     end

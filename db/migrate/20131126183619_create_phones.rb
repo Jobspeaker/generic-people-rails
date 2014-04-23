@@ -4,6 +4,7 @@ class CreatePhones < ActiveRecord::Migration
       t.references :label, index: true
       t.string :number
       t.references :carrier, index: true
+      t.boolean :confirmed, default: false
 
       t.timestamps
     end
