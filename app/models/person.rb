@@ -3,10 +3,7 @@ class Person < ActiveRecord::Base
   has_and_belongs_to_many :phones
   has_and_belongs_to_many :emails
   has_and_belongs_to_many :nicknames
-
   has_many :devices
-  has_many :last_logins
-  has_many :credential_records, :class_name => "Credential", :foreign_key => :person_id
 
   def self.lookup(name)
     person   = self.find_by(self.name_components(name))
@@ -78,14 +75,6 @@ class Person < ActiveRecord::Base
 
   def nickname
     monikers.first || initials
-  end
-
-  def credentials
-    self.credential_records[0] rescue nil
-  end
-
-  def update_last_login
-    last_logins << LastLogin.create(:person => self, :moment => DateTime.now)
   end
 
   def register_device(identifier)
