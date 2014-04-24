@@ -4,6 +4,8 @@ class AddKeys < ActiveRecord::Migration
     add_foreign_key "addresses_people", "addresses", name: "addresses_people_address_id_fk"
     add_foreign_key "addresses_people", "people", name: "addresses_people_person_id_fk"
     add_foreign_key "api_tokens", "people", name: "api_tokens_person_id_fk"
+    add_foreign_key "billable_hours", "clients", name: "billable_hours_client_id_fk"
+    add_foreign_key "billable_hours", "subcontractors", name: "billable_hours_subcontractor_id_fk"
     add_foreign_key "contacts", "labels", name: "contacts_label_id_fk"
     add_foreign_key "contacts", "people", name: "contacts_person_id_fk"
     add_foreign_key "credentials", "emails", name: "credentials_email_id_fk"
@@ -19,6 +21,9 @@ class AddKeys < ActiveRecord::Migration
     add_foreign_key "people_phones", "phones", name: "people_phones_phone_id_fk"
     add_foreign_key "phones", "carriers", name: "phones_carrier_id_fk"
     add_foreign_key "phones", "labels", name: "phones_label_id_fk"
-            
+    add_foreign_key "rate_infos", "clients", name: "rate_infos_client_id_fk"
+    add_foreign_key "rate_infos", "subcontractors", name: "rate_infos_subcontractor_id_fk"
+    add_foreign_key "subcontractors", "people", name: "subcontractors_person_id_fk"
+    add_foreign_key "wage_infos", "subcontractors", name: "wage_infos_subcontractor_id_fk"
   end
 end

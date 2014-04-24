@@ -1,4 +1,4 @@
-class CreatePeople < ActiveRecord::Migration
+class CreatePeopleAndMembers < ActiveRecord::Migration
   def change
     create_table :people do |t|
       t.string :fname
@@ -27,6 +27,12 @@ class CreatePeople < ActiveRecord::Migration
     create_table :people_phones do |t|
       t.references :person
       t.references :phone
+    end
+
+    create_table :members do |t|
+      t.references :person
+      t.string     :status
+      t.timestamps
     end
 
   end
