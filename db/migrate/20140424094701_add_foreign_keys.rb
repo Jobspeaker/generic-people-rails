@@ -16,6 +16,6 @@ class AddForeignKeys < ActiveRecord::Migration
     add_foreign_key "phones", "carriers", name: "phones_carrier_id_fk"
     add_foreign_key "phones", "labels", name: "phones_label_id_fk"
     add_foreign_key "devices", "people", name: "devices_person_id_fk"
-    add_foreign_key "last_logins", "people", name: "last_logins_person_id_fk"
+    add_foreign_key "last_logins", "members", name: "last_logins_member_id_fk"
   end
 end
