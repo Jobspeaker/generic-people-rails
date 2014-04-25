@@ -2,3 +2,9 @@
 # task :generic_people_rails do
 #   # Task goes here
 # end
+
+namespace :gpr do
+  task :seed do
+    puts "Hi"
+  end
+end
