@@ -1,4 +1,5 @@
 class Person < ActiveRecord::Base
+  has_one :member
   has_and_belongs_to_many :addresses
   has_and_belongs_to_many :phones
   has_and_belongs_to_many :emails

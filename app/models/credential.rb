@@ -1,5 +1,7 @@
 class Credential < ActiveRecord::Base
-  belongs_to :person
+  belongs_to :member
+  belongs_to :person 
+
   belongs_to :email
   has_many :permissions
   has_many :api_tokens
