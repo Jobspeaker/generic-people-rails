@@ -1,6 +1,6 @@
 class AddForeignKeys < ActiveRecord::Migration
   def change
-    add_foreign_key "api_tokens", "people", name: "api_tokens_person_id_fk"
+#    add_foreign_key "api_tokens", "people", name: "api_tokens_person_id_fk"
     add_foreign_key "credentials", "emails", name: "credentials_email_id_fk"
     add_foreign_key "credentials", "members", name: "credentials_person_id_fk"
     add_foreign_key "addresses", "labels", name: "addresses_label_id_fk"
