@@ -17,13 +17,29 @@ class Credential < ActiveRecord::Base
     return authenticate(email_address,password) if email_object && self.where(email_id: email_object.id).length
 
     email = Email.find_or_create_by(address: email_address)
-    self.create(email: email,password: password)
+
+    person = Person.create hash.slice(:fname, :lname, :minitial, :birthdate) 
+    person.emails << email
+
+    member = Member.create( person: person )
+    
+    self.create(email: email,password: password, member: member, person: person)
   end
 
   def self.authenticate_oauth(hash)
-    email_id = Email.find_or_create_by(:address => hash[:email]).id
-    c = self.find_by(email_id:email_id, provider: hash[:provider] , uid: hash[:uid])
-    c ||= self.create(email_id:email_id, provider: hash[:provider], uid: hash[:uid], password: SecureRandom.hex(30))
+    email = Email.find_or_create_by(:address => hash[:email])
+    c = self.find_by(email_id:email.id, provider: hash[:provider] , uid: hash[:uid])
+    c ||= self.new(email_id:email.id, provider: hash[:provider], uid: hash[:uid], password: SecureRandom.hex(30))
+
+    person = Person.create hash.slice(:fname, :lname, :minitial, :birthdate) 
+    person.emails << email
+
+    member = Member.create( person: person )
+    c.member = member
+    c.person = person
+    c.save
+
+    c
   end
 
   def can(name)
