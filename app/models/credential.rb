@@ -31,13 +31,15 @@ class Credential < ActiveRecord::Base
     c = self.find_by(email_id:email.id, provider: hash[:provider] , uid: hash[:uid])
     c ||= self.new(email_id:email.id, provider: hash[:provider], uid: hash[:uid], password: SecureRandom.hex(30))
 
-    person = Person.create hash[:person].slice(:fname, :lname, :minitial, :birthdate) 
-    person.emails << email
+    if(!c.member)
+      person = Person.create hash[:person].slice(:fname, :lname, :minitial, :birthdate) 
+      person.emails << email
 
-    member = Member.create( person: person )
-    c.member = member
-    c.person = person
-    c.save
+      member = Member.create( person: person )
+      c.member = member
+      c.person = person
+      c.save
+    end
 
     c
   end
