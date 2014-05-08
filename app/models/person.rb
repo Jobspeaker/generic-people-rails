@@ -27,7 +27,7 @@ class Person < ActiveRecord::Base
   def self.find_or_create_by(hash)
     options = hash.clone
     if options.has_key?(:name)
-      options.merge(self.name_components(options[:name]))
+      options = options.merge(self.name_components(options[:name]))
       options.delete(:name)
     end
     super(options)
