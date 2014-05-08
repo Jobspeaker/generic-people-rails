@@ -24,6 +24,15 @@ class Person < ActiveRecord::Base
     person
   end
 
+  def self.find_or_create_by(hash)
+    options = hash.clone
+    if options.has_key?(:name)
+      options.merge(self.name_components(options[:name]))
+      options.delete(:name)
+    end
+    super(options)
+  end
+
   def self.find_by_nickname(moniker)
     person = self.includes(:nicknames).joins(:nicknames).find_by("nicknames.moniker" => moniker)
   end
