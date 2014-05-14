@@ -1,7 +1,33 @@
 class Address < ActiveRecord::Base
   belongs_to :label
   has_and_belongs_to_many :people
+  
+  def address
+    oneline
+  end
 
+  def address=(string) 
+    components = string.split(",").collect(&:strip)
+    self.line1 = components.shift
+#    self.line2 = components.shift if components[0].split(" ").length > 1
+    l = components.length - 1
+    if l > 0
+      if components.last =~ /[0-9]+$/
+        self.postal = components.last
+        components.pop
+      end
+    end
+    self.city = components.shift rescue nil
+    self.state = components.shift rescue nil
+    self.country = components.shift rescue "USA"
+  end
+  
+  def as_json(options)
+    hash = super(options)
+    hash[:address] = oneline
+    hash
+  end
+  
   def admin_object_name
     [line1, city, postal].join(" ").strip rescue ""
   end
@@ -12,19 +38,7 @@ class Address < ActiveRecord::Base
 
   def self.parse(string)
     a = Address.new
-    components = string.split(",").collect(&:strip)
-    a.line1 = components.shift
-#    a.line2 = components.shift if components[0].split(" ").length > 1
-    l = components.length - 1
-    if l > 0
-      if components.last =~ /[0-9]+$/
-        a.postal = components.last
-        components.pop
-      end
-    end
-    a.city = components.shift rescue nil
-    a.state = components.shift rescue nil
-    a.country = components.shift rescue "USA"
+    a.address = string
     a
   end
 
