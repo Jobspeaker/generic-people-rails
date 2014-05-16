@@ -24,6 +24,12 @@ class Person < ActiveRecord::Base
     person
   end
 
+  def as_json(options)
+    hash = super(options)
+    hash[:name] = name
+    hash
+  end
+
   def self.find_or_create_by(hash)
     options = hash.clone
     if options.has_key?(:name)
