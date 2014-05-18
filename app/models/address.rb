@@ -17,7 +17,9 @@ class Address < ActiveRecord::Base
     r
   end
 
-  def address=(string) 
+  def address=(string)
+    return unless string.presence && !postal_changed?
+
     r = Geocoder.search(string)
     puts "UPDATE_FROM_ADDRESS Geocoded? #{@already_geocoded}"
     @already_geocoded = true
