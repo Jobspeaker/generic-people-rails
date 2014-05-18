@@ -1,31 +1,74 @@
 class Address < ActiveRecord::Base
   belongs_to :label
   has_and_belongs_to_many :people
-  
+
+  before_validation :update_from_postal , :if => lambda { |obj| obj.postal_changed? }
+
   def address
     oneline
   end
 
+  def save
+    r = super
+    
+    @already_geocoded = false
+    puts "saved address now Geocoded? #{@already_geocoded}"
+    
+    r
+  end
+
   def address=(string) 
-    components = string.split(",").collect(&:strip)
-    self.line1 = components.shift
-#    self.line2 = components.shift if components[0].split(" ").length > 1
-    l = components.length - 1
-    if l > 0
-      if components.last =~ /[0-9]+$/
-        self.postal = components.last
-        components.pop
-      end
+    r = Geocoder.search(string)
+    puts "UPDATE_FROM_ADDRESS Geocoded? #{@already_geocoded}"
+    @already_geocoded = true
+    puts "UPDATE_from address now Geocoded? #{@already_geocoded}"
+
+    if(r.length == 0) 
+      puts "No results."
+      self.errors[:address] = "No locations found."
+      self.line1 = string
+    elsif(r.length == 1)
+      res = r[0]
+      self.line1 = res.street_address
+      self.line2 = nil
+      self.city = res.city
+      self.state = res.state_code
+      self.postal = res.postal_code
+      self.country = res.country_code
+    else
+      puts "TOo many."
+      self.line1 = string
+      self.errors[:address] = "Too many matches."
     end
-    self.city = components.shift rescue nil
-    self.state = components.shift rescue nil
-    self.country = components.shift rescue "USA"
+    string
   end
   
   def as_json(options)
     hash = super(options)
     hash[:address] = oneline
     hash
+  end
+
+  def update_from_postal
+    puts "UPDATE_FROM_POSTAL Geocoded? #{@already_geocoded}, '#{self.postal}'"
+    return if @already_geocoded
+    r = Geocoder.search(self.postal)
+    if(r.length == 0)
+      self.errors[:postal] = "Couldn't locate postal code"
+    elsif(r.length == 1)
+      res = r[0]
+      self.city = res.city
+      self.state = res.state_code
+      self.country = res.country_code
+    else
+      self.errors[:postal] = "Too many matches"
+    end
+  end
+
+  def update_attributes hash
+    super
+
+    self.postal= hash[:postal]
   end
   
   def admin_object_name
@@ -39,6 +82,7 @@ class Address < ActiveRecord::Base
   def self.parse(string)
     a = Address.new
     a.address = string
+    a.save
     a
   end
 

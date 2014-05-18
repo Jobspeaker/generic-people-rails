@@ -3,7 +3,8 @@ PATH
   specs:
     generic_people_rails (0.0.1)
       foreigner (~> 1.6.1)
-      rails (~> 4.0.0)
+      geocoder
+      rails (>= 4.0.0)
 
 GEM
   remote: https://rubygems.org/
@@ -37,6 +38,7 @@ GEM
     erubis (2.7.0)
     foreigner (1.6.1)
       activerecord (>= 3.0.0)
+    geocoder (1.1.8)
     hike (1.2.3)
     i18n (0.6.9)
     mail (2.5.4)
@@ -44,7 +46,7 @@ GEM
       treetop (~> 1.4.8)
     mime-types (1.25.1)
     minitest (4.7.5)
-    multi_json (1.9.2)
+    multi_json (1.9.3)
     polyglot (0.3.4)
     rack (1.5.2)
     rack-test (0.6.2)
@@ -86,4 +88,5 @@ PLATFORMS
 
 DEPENDENCIES
   generic_people_rails!
+  geocoder
   sqlite3
