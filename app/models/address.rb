@@ -67,12 +67,6 @@ class Address < ActiveRecord::Base
     end
   end
 
-  def update_attributes hash
-    super
-
-    self.postal= hash[:postal]
-  end
-  
   def admin_object_name
     [line1, city, postal].join(" ").strip rescue ""
   end
