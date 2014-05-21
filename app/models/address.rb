@@ -12,9 +12,16 @@ class Address < ActiveRecord::Base
     r = super
     
     @already_geocoded = false
-    puts "saved address now Geocoded? #{@already_geocoded}"
-    
+
     r
+  end
+
+  def assign_attributes hash
+    a = hash['address']
+    hash.delete 'address'
+    super hash
+    self.address=(a)
+    nil
   end
 
   def address=(string)
@@ -23,24 +30,20 @@ class Address < ActiveRecord::Base
     return unless string != oneline
 
     r = Geocoder.search(string)
-    puts "UPDATE_FROM_ADDRESS Geocoded? #{@already_geocoded}"
     @already_geocoded = true
-    puts "UPDATE_from address now Geocoded? #{@already_geocoded}"
 
     if(r.length == 0) 
-      puts "No results."
       self.errors[:address] = "No locations found."
       self.line1 = string
     elsif(r.length == 1)
       res = r[0]
-      self.line1 = res.street_address
+      self.line1 = res.street_address.to_s
       self.line2 = nil
-      self.city = res.city
-      self.state = res.state_code
-      self.postal = res.postal_code
-      self.country = res.country_code
+      self.city = res.city.to_s
+      self.state = res.state_code.to_s
+      self.postal = res.postal_code.to_s
+      self.country = res.country_code.to_s
     else
-      puts "TOo many."
       self.line1 = string
       self.errors[:address] = "Too many matches."
     end
@@ -54,7 +57,6 @@ class Address < ActiveRecord::Base
   end
 
   def update_from_postal
-    puts "UPDATE_FROM_POSTAL Geocoded? #{@already_geocoded}, '#{self.postal}'"
     return if @already_geocoded
     r = Geocoder.search(self.postal)
     if(r.length == 0)
