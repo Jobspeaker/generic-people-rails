@@ -1,8 +1,9 @@
 class Address < ActiveRecord::Base
   belongs_to :label
   has_and_belongs_to_many :people
+  require 'carmen'
 
-  before_validation :update_from_postal , :if => lambda { |obj| obj.postal_changed? }
+#  before_validation :update_from_postal , :if => lambda { |obj| obj.postal_changed? }
 
   def address
     oneline
@@ -32,10 +33,10 @@ class Address < ActiveRecord::Base
     r = Geocoder.search(string)
     @already_geocoded = true
 
-    if(r.length == 0) 
+    if r.length == 0
       self.errors[:address] = "No locations found."
       self.line1 = string
-    elsif(r.length == 1)
+    else
       res = r[0]
       self.line1 = res.street_address.to_s
       self.line2 = nil
@@ -43,11 +44,10 @@ class Address < ActiveRecord::Base
       self.state = res.state_code.to_s
       self.postal = res.postal_code.to_s
       self.country = res.country_code.to_s
-    else
-      self.line1 = string
-      self.errors[:address] = "Too many matches."
     end
-    string
+
+    self.errors[:address] = "Too many matches." if r.length > 1
+    self.oneline
   end
   
   def as_json(options)
@@ -59,15 +59,13 @@ class Address < ActiveRecord::Base
   def update_from_postal
     return if @already_geocoded
     r = Geocoder.search(self.postal)
-    if(r.length == 0)
+    if r.length == 0
       self.errors[:postal] = "Couldn't locate postal code"
-    elsif(r.length == 1)
+    else
       res = r[0]
       self.city = res.city
       self.state = res.state_code
       self.country = res.country_code
-    else
-      self.errors[:postal] = "Too many matches"
     end
   end
 
@@ -80,9 +78,8 @@ class Address < ActiveRecord::Base
   end
 
   def self.parse(string)
-    a = Address.new
+    a = self.new
     a.address = string
-    a.save
     a
   end
 
