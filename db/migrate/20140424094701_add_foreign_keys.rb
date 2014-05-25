@@ -1,3 +1,8 @@
+require 'foreigner'
+ActiveSupport.on_load :active_record do
+  Foreigner.load
+end
+
 class AddForeignKeys < ActiveRecord::Migration
   def change
     add_foreign_key "credentials", "emails", name: "credentials_email_id_fk"
