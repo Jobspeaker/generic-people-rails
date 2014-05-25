@@ -1,17 +1,19 @@
-# desc "Explaining what the task does"
+# desc "Explaiinng what the task does"
 # task :generic_people_rails do
 #   # Task goes here
 # end
 require "csv"
 namespace :gpr do
   task :populate => [:environment] do
-    alphabet = %w(A B C D E F G H J K  L M N O P Q R S T U V W X Y Z)
-    100.times do
+    alphabet = %w(A B C D E F G H I J K L M N O P Q R S T U V W X Y Z)
+    all_credentials = []
+    10.times do |i|
       response = Net::HTTP.get_response("api.randomuser.me", "/")
       h = JSON(response.body)['results'][0]['user']
       ah = h['location']
       nh = h['name']
       person = Person.create(fname: nh['first'].titleize, minitial: alphabet.sample + ".", lname: nh['last'].titleize, birthdate: DateTime.strptime(h['dob'], "%s"))
+      puts " - gpr:populate - anonymous person #{person.name} at ID##{person.id}"
       address = Address.create(line1: ah["street"].titleize, city: ah["city"].titleize, state: ah["state"].titleize, country: "US", postal: ah["zip"])
       home_phone = Phone.create(number: h["phone"], label: Label.get(["Home"]))
       cell_phone = Phone.create(number: h["cell"], label: Label.get(["Cell"]))
@@ -22,7 +24,7 @@ namespace :gpr do
       person.emails << email
       member = Member.create(person_id: person.id)
       credential = Credential.create(email: email, member_id: member.id, password: h['password'])
-
+      all_credentials << "#{h['email']} => #{h['password']}"
       has_media_class = ((Kernel.const_get("Media")).class == Class) rescue nil
       if has_media_class
         raw_photo = Media.create(basetype: "image", mimetype: "image/jpeg", caption: "profile pic",
@@ -31,6 +33,8 @@ namespace :gpr do
         profile_pic = ProfilePhoto.create(media_id: raw_photo.id, member_id: member.id)
       end
     end
+    puts "Created the following login credentials"
+    puts all_credentials
   end
 
   task :seed => [:environment] do
