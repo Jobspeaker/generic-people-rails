@@ -1,7 +1,5 @@
 class Credential < ActiveRecord::Base
   belongs_to :member
-  belongs_to :person 
-
   belongs_to :email
   has_many :permissions
   has_many :api_tokens
@@ -18,10 +16,10 @@ class Credential < ActiveRecord::Base
 
     email = Email.find_or_create_by(address: email_address)
 
-    person = Person.create hash.slice(:fname, :lname, :minitial, :birthdate) 
+    person = Person.create(hash.slice(:fname, :lname, :minitial, :birthdate))
     person.emails << email
 
-    member = Member.create( person: person )
+    member = Member.create(person: person)
     
     self.create(email: email,password: password, member: member, person: person)
   end
@@ -31,8 +29,8 @@ class Credential < ActiveRecord::Base
     c = self.find_by(email_id:email.id, provider: hash[:provider] , uid: hash[:uid])
     c ||= self.new(email_id:email.id, provider: hash[:provider], uid: hash[:uid], password: SecureRandom.hex(30))
 
-    if(!c.member)
-      person = Person.create hash[:person].slice(:fname, :lname, :minitial, :birthdate) 
+    if not c.member
+      person = Person.create(hash[:person].slice(:fname, :lname, :minitial, :birthdate))
       person.emails << email
 
       member = Member.create( person: person )
