@@ -5,6 +5,7 @@ require "generic_people_rails/version"
 
 # Describe your gem and declare its dependencies:
 Gem::Specification.new do |s|
+  s.platform = Gem::Platform::RUBY
   s.name        = "generic_people_rails"
   s.version     = GenericPeopleRails::VERSION
   s.authors     = ["Daniel Staudigel", "Brian J. Fox"]
@@ -17,7 +18,8 @@ Gem::Specification.new do |s|
   s.test_files = Dir["test/**/*"]
 
   s.add_dependency "rails", ">= 4.0.0"
-  s.add_runtime_dependency "foreigner", "~> 1.6.1"
-  s.add_runtime_dependency "geocoder"
+  s.add_dependency "foreigner", "~> 1.6.1"
+  s.add_dependency "geocoder"
+  s.add_dependency "carmen-demonyms"
   s.add_development_dependency "sqlite3"
 end
