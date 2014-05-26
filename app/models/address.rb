@@ -2,6 +2,7 @@ class Address < ActiveRecord::Base
   belongs_to :label
   has_and_belongs_to_many :people
   require 'carmen'
+  require 'geocoder'
 
 #  before_validation :update_from_postal , :if => lambda { |obj| obj.postal_changed? }
 
