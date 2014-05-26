@@ -15,9 +15,9 @@ namespace :gpr do
       person = Person.create(fname: nh['first'].titleize, minitial: alphabet.sample + ".", lname: nh['last'].titleize, birthdate: DateTime.strptime(h['dob'], "%s"))
       puts " - gpr:populate - anonymous person #{person.name} at ID##{person.id}"
       address = Address.create(line1: ah["street"].titleize, city: ah["city"].titleize, state: ah["state"].titleize, country: "US", postal: ah["zip"])
-      home_phone = Phone.create(number: h["phone"], label: Label.get(["Home"]))
-      cell_phone = Phone.create(number: h["cell"], label: Label.get(["Cell"]))
-      email = Email.create(address: h["email"], label: Label.get(["Work", "Home"].sample))
+      home_phone = Phone.create(number: h["phone"], label: Label.get("Home"))
+      cell_phone = Phone.create(number: h["cell"], label: Label.get("Cell"))
+      email = Email.create(address: h["email"], label: Label.get("Home".sample))
       person.addresses << address
       person.phones << home_phone
       person.phones << cell_phone
