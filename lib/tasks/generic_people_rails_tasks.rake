@@ -17,7 +17,7 @@ namespace :gpr do
       address = Address.create(line1: ah["street"].titleize, city: ah["city"].titleize, state: ah["state"].titleize, country: "US", postal: ah["zip"])
       home_phone = Phone.create(number: h["phone"], label: Label.get("Home"))
       cell_phone = Phone.create(number: h["cell"], label: Label.get("Cell"))
-      email = Email.create(address: h["email"], label: Label.get("Home".sample))
+      email = Email.create(address: h["email"], label: Label.get(["Work", "Home"].sample))
       person.addresses << address
       person.phones << home_phone
       person.phones << cell_phone
