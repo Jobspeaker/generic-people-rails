@@ -9,6 +9,12 @@ class CreatePeopleAndMembers < ActiveRecord::Migration
       t.timestamps
     end
 
+    create_table :members do |t|
+      t.references :person
+      t.string     :status
+      t.timestamps
+    end
+
     create_table :nicknames_people, id: false do |t|
       t.references :nickname
       t.references :person
@@ -27,12 +33,6 @@ class CreatePeopleAndMembers < ActiveRecord::Migration
     create_table :people_phones, id: false do |t|
       t.references :person
       t.references :phone
-    end
-
-    create_table :members, id: false do |t|
-      t.references :person
-      t.string     :status
-      t.timestamps
     end
 
   end
