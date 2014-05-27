@@ -18,11 +18,11 @@ class Address < ActiveRecord::Base
     r
   end
 
-  def assign_attributes hash
+  def assign_attributes(hash)
     a = hash['address']
-    hash.delete 'address'
+    hash.delete('address')
     super hash
-    self.address=(a)
+    self.address = a
     nil
   end
 
