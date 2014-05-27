@@ -19,10 +19,12 @@ class Address < ActiveRecord::Base
   end
 
   def assign_attributes hash
-    a = hash['address']
-    hash.delete 'address'
+    if hash.has_key? 'address'
+      a = hash['address']
+      hash.delete 'address'
+    end
     super hash
-    self.address=(a)
+    self.address=(a) if a
     nil
   end
 
