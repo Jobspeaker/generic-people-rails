@@ -9,27 +9,27 @@ class CreatePeopleAndMembers < ActiveRecord::Migration
       t.timestamps
     end
 
-    create_table :nicknames_people do |t|
+    create_table :nicknames_people, id: false do |t|
       t.references :nickname
       t.references :person
     end
 
-    create_table :addresses_people do |t|
+    create_table :addresses_people, id: false do |t|
       t.references :address
       t.references :person
     end
 
-    create_table :emails_people do |t|
+    create_table :emails_people, id: false do |t|
       t.references :email
       t.references :person
     end
 
-    create_table :people_phones do |t|
+    create_table :people_phones, id: false do |t|
       t.references :person
       t.references :phone
     end
 
-    create_table :members do |t|
+    create_table :members, id: false do |t|
       t.references :person
       t.string     :status
       t.timestamps
