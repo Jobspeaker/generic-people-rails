@@ -20,6 +20,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency "rails", ">= 4.0.0"
   s.add_runtime_dependency "foreigner", "~> 1.6.1"
   s.add_runtime_dependency "geocoder"
+  s.add_runtime_dependency "carmen"
   s.add_runtime_dependency "carmen-demonyms"
   s.add_development_dependency "sqlite3"
 end
