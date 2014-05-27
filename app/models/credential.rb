@@ -21,7 +21,7 @@ class Credential < ActiveRecord::Base
 
     member = Member.create(person: person)
     
-    self.create(email: email,password: password, member: member, person: person)
+    self.create(email: email,password: password, member: member)
   end
 
   def self.authenticate_oauth(hash)
