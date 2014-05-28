@@ -1,3 +1,5 @@
+require 'zodiac'
+
 class Person < ActiveRecord::Base
   has_one :member
   has_and_belongs_to_many :addresses
@@ -110,13 +112,16 @@ class Person < ActiveRecord::Base
   end
 
   def age
-    return nil if not self.birthdate.present?
-    (Date.today - self.birthdate).to_i / 365
+    ((Date.today - self.birthdate).to_i / 365) if self.birthdate.present?
   end
 
   def age=(new_age)
     self.birthdate = (Date.today - (rand(Date.today.month - 1))) - new_age.years
     self.birthdate
+  end
+
+  def zodiac_sign
+    self.birthdate.zodiac_sign if self.birthdate.present?
   end
 
   def email=(eaddr)
@@ -296,8 +301,6 @@ class Person < ActiveRecord::Base
 
   def update_attributes(attrs)
     args = attrs
-    args.delete(:provides)
-    args.delete(:wage)
     if args[:birthdate].class == String
       args[:birthdate] = Person.make_parseable_birthdate(args[:birthdate])
     end
