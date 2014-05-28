@@ -4,22 +4,18 @@ class Address < ActiveRecord::Base
   require 'carmen'
   require 'geocoder'
 
-#  before_validation :update_from_postal , :if => lambda { |obj| obj.postal_changed? }
-
   def address
     oneline
   end
 
-  def save
-    r = super
-    
+  def save(options={})
+    r = super(options)
     @already_geocoded = false
-
     r
   end
 
   def assign_attributes(hash)
-    if hash.has_key? 'address'
+    if hash.has_key?('address')
       a = hash['address']
       hash.delete('address')
     end
@@ -29,7 +25,7 @@ class Address < ActiveRecord::Base
   end
 
   def address=(string)
-    return unless string.presence && !postal_changed?
+    return unless not string.blank? and not postal_changed?
     return unless string != line1
     return unless string != oneline
 
