@@ -115,7 +115,8 @@ class Person < ActiveRecord::Base
   end
 
   def age=(new_age)
-    self.birthdate = Date.today - new_age.years
+    self.birthdate = (Date.today - (rand(Date.today.month - 1))) - new_age.years
+    self.birthdate
   end
 
   def email=(eaddr)
