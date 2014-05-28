@@ -109,6 +109,15 @@ class Person < ActiveRecord::Base
     self.minitial = components[:minitial]
   end
 
+  def age
+    return nil if not self.birthdate.present?
+    (Date.today - self.birthdate).to_i / 365
+  end
+
+  def age=(new_age)
+    self.birthdate = Date.today - new_age.years
+  end
+
   def email=(eaddr)
     e = emails.first rescue nil
     e ||= Email.create(:label => Label.get("Work"))
