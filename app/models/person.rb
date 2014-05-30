@@ -101,7 +101,11 @@ class Person < ActiveRecord::Base
   end
 
   def name
-    [fname, minitial, lname].join(" ").strip
+    components = []
+    components << fname if fname.present?
+    components << minitial if minitial.present?
+    components << lname if lname.present?
+    components.join(" ").strip
   end
 
   def name=(incoming_name)
