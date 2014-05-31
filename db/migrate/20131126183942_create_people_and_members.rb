@@ -12,6 +12,7 @@ class CreatePeopleAndMembers < ActiveRecord::Migration
     create_table :members do |t|
       t.references :person
       t.string     :status
+      t.string     :uuid
       t.timestamps
     end
 

@@ -10,8 +10,17 @@ class Member < ActiveRecord::Base
   delegate :email, :to => :person, :allow_nil => true
   delegate :set_location, :to => :person, :allow_nil => true
 
+  before_save :ensure_uuid
+
   def update_last_login
     last_logins << LastLogin.create(:person => self, :moment => DateTime.now)
   end
 
+  def make_uuid
+    SecureRandom.hex.downcase
+  end
+
+  def ensure_uuid
+    (self.uuid = make_uuid if not self.uuid.present?) rescue nil
+  end
 end
