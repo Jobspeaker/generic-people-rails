@@ -17,7 +17,7 @@ class Member < ActiveRecord::Base
   end
 
   def make_uuid
-    SecureRandom.hex.downcase
+    SecureRandom.uuid.downcase
   end
 
   def ensure_uuid
