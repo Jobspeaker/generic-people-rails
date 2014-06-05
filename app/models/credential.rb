@@ -35,7 +35,6 @@ class Credential < ActiveRecord::Base
 
       member = Member.create( person: person )
       c.member = member
-      c.person = person
       c.save
     end
 
