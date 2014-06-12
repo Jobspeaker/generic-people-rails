@@ -4,7 +4,12 @@ class Phone < ActiveRecord::Base
   has_and_belongs_to_many :people
 
   before_save :normalize_number
-
+  
+  def assign_attributes(hash)
+    hash[:label] = Label.get(hash[:label]) if hash[:label].kind_of? String
+    super(hash)
+  end
+  
   def self.find_by_number(incoming)
     self.find_all_by_number(incoming).first
   end
