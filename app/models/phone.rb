@@ -6,7 +6,10 @@ class Phone < ActiveRecord::Base
   before_save :normalize_number
   
   def assign_attributes(hash)
-    hash[:label] = Label.get(hash[:label]) if hash[:label].kind_of? String
+    if hash['label'].kind_of? String
+      hash['label'] = (hash[:label].presence && Label.get(hash['label'])) || nil
+    end
+
     super(hash)
   end
   
