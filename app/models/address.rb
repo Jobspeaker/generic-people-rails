@@ -48,11 +48,17 @@ class Address < ActiveRecord::Base
     self.errors[:address] = "Too many matches." if r.length > 1
     self.oneline
   end
+
+  def self.find_by_address(string)
+    template = self.parse(string)
+    self.find_by(template.attributes.symbolize_keys!.slice(:line1, :line2, :city, :state))
+  end
   
-  def as_json(options)
-    hash = super(options)
-    hash[:address] = oneline
-    hash
+  def as_json(options={})
+    res = super(options)
+    res[:address] = oneline
+    res[:label] = self.label.value if self.label
+    res
   end
 
   def update_from_postal

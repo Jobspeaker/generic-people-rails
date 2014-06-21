@@ -50,6 +50,16 @@ class Person < ActiveRecord::Base
     e.person if e
   end
 
+  def self.find_by_phone_number(number)
+    p = Phone.find_by_number(number)
+    p.person if p
+  end
+
+  def self.find_by_address(string)
+    a = Address.find_by_address(string)
+    a.person if a
+  end
+
   def self.authenticate(username, password)
     me = self.find_by_email(username)
     return me if me and me.credentials and password == me.credentials.password
@@ -73,6 +83,32 @@ class Person < ActiveRecord::Base
       nick = Nickname.create(moniker: moniker)
       nicknames << nick
     end
+  end
+
+  def add_phone(number, label="Home")
+    if self != self.class.find_by_phone_number(number)
+      p = Phone.create(number: number, label: Label.get(label))
+      phones << p
+    end
+    p = Phone.find_by_number(number)
+  end
+
+  def add_email(address, label="Home")
+    if self != self.class.find_by_email(address)
+      e = Email.create(address: address, label: Label.get(label))
+      emails << e
+    end
+    e = Email.find_by(address: address)
+  end
+
+  def add_address(address_line, label="Home")
+    if self != self.class.find_by_address(address_line)
+      a = Address.parse(address_line); a.save
+      a.label = Label.get(label)
+      a.save
+      addresses << a
+    end
+    a = Address.find_by_address(address_line)
   end
 
   def add_moniker(moniker)

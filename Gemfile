@@ -9,5 +9,6 @@ source "https://rubygems.org"
 gemspec
 
 gem 'foreigner', '~> 1.6.1'
+gem 'forgery'
 gem 'geocoder'
 gem 'carmen-demonyms'

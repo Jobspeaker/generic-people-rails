@@ -15,4 +15,10 @@ class Email < ActiveRecord::Base
   def force_address_to_lowercase
     self.address = self.address.downcase if self.address.present?
   end
+
+  def as_json(options={})
+    res = super(options)
+    res[:label] = self.label.value if self.label.present?
+    res
+  end
 end

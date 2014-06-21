@@ -24,10 +24,18 @@ class Credential < ActiveRecord::Base
     self.create(email: email,password: password, member: member)
   end
 
+  # User in the hash is already externally authenticated by facebook, google+, etc.
+  # Credential.authenticate_oauth finds or creates a Jammcard credential that matches
+  # the email address of the authenticated user.  If a user has authenticated once with
+  # facebook, and then they want to authenticate with google+, we allow that, but ignore
+  # the new provider.  This probably requires more thought.
   def self.authenticate_oauth(hash)
     email = Email.find_or_create_by(:address => hash[:email])
-    cred = self.find_or_create_by(email_id: email.id, provider: hash[:provider] , uid: hash[:uid])
-    ((cred.password = SecureRandom.hex(30)) and cred.save) if not cred.password.present?
+    cred = self.find_or_create_by(email_id: email.id)
+    cred.provider ||= hash[:provider]
+    cred.uid ||= hash[:uid]
+    cred.password ||= SecureRandom.hex(30)
+    cred.save
 
     if not cred.member
       person = Person.create(hash[:person].slice(:fname, :lname, :minitial, :birthdate))
