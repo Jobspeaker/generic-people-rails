@@ -124,5 +124,4 @@ class Address < ActiveRecord::Base
   def person
     self.people.first rescue nil
   end
-
 end
