@@ -16,6 +16,12 @@ class Email < ActiveRecord::Base
     self.address = self.address.downcase if self.address.present?
   end
 
+  def label=(text_or_label)
+    l   = Label.get(text_or_label.to_s) if text_or_label.is_a?(String) or text_or_label.is_a?(Symbol)
+    l ||= text_or_label
+    write_attribute(:label_id, l.id)
+  end
+
   def as_json(options={})
     res = super(options)
     res[:label] = self.label.value if self.label.present?

@@ -44,6 +44,12 @@ class Phone < ActiveRecord::Base
     self.carrier.send_sms(self.number, message)
   end
 
+  def label=(text_or_label)
+    l   = Label.get(text_or_label.to_s) if text_or_label.is_a?(String) or text_or_label.is_a?(Symbol)
+    l ||= text_or_label
+    write_attribute(:label_id, l.id)
+  end
+
   def as_json(options={})
     res = super(options) if options.present?
     res ||= super(:only => [:id, :number, :carrier, :created_at, :updated_at])

@@ -19,9 +19,15 @@ class Address < ActiveRecord::Base
       a = hash['address']
       hash.delete('address')
     end
-    super hash
+    super(hash)
     self.address = a if a
     nil
+  end
+
+  def label=(text_or_label)
+    l   = Label.get(text_or_label.to_s) if text_or_label.is_a?(String) or text_or_label.is_a?(Symbol)
+    l ||= text_or_label
+    write_attribute(:label_id, l.id)
   end
 
   def address=(string)
