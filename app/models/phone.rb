@@ -53,9 +53,8 @@ class Phone < ActiveRecord::Base
 
   def as_json(options={})
     for_member = options.delete(:for_member)
-#    includes = options.delete(:include)
+    options[:only] ||= [:id, :number, :carrier, :created_at, :updated_at]
     res = super(options) if options.present?
-    res ||= super(:only => [:id, :number, :carrier, :created_at, :updated_at])
     res[:label] = self.label.value if self.label
     res
   end
