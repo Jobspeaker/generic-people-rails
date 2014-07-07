@@ -28,7 +28,7 @@ class Person < ActiveRecord::Base
 
   def as_json(options={})
     for_member = options.delete(:for_member)
-    includes = options.delete(:include)
+    # includes = options.delete(:include)
     hash = super(options)
     hash[:name] = name
     hash

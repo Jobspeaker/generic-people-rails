@@ -24,7 +24,7 @@ class Email < ActiveRecord::Base
 
   def as_json(options={})
     for_member = options.delete(:for_member)
-    includes = options.delete(:include)
+#    includes = options.delete(:include)
     res = super(options)
     res[:label] = self.label.value if self.label.present?
     res
