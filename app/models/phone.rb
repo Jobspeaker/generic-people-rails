@@ -47,7 +47,8 @@ class Phone < ActiveRecord::Base
   def label=(text_or_label)
     l   = Label.get(text_or_label.to_s) if text_or_label.is_a?(String) or text_or_label.is_a?(Symbol)
     l ||= text_or_label
-    write_attribute(:label_id, l.id)
+    Rails.logger.error("GPR:Model<phone>: text_or_label == '#{text_or_label}', class= '#{text_or_label.class.name}'") if not l
+    write_attribute(:label_id, l.id) if l.present?
   end
 
   def as_json(options={})
