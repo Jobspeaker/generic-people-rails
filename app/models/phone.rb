@@ -5,14 +5,6 @@ class Phone < ActiveRecord::Base
 
   before_save :normalize_number
   
-  def assign_attributes(hash)
-    if hash['label'].kind_of? String
-      hash['label'] = (hash[:label].presence && Label.get(hash['label'])) || nil
-    end
-
-    super(hash)
-  end
-  
   def self.find_by_number(incoming)
     self.find_all_by_number(incoming).first
   end
