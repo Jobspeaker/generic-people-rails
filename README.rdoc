@@ -16,6 +16,4 @@ And finally, migrate your database:
 
      rake db:migrate
 
-This will install all the table GenericPeopleRails needs.
-
-
+This will install all the tables that GenericPeopleRails needs.
