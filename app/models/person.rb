@@ -172,11 +172,27 @@ class Person < ActiveRecord::Base
 
   def name
     components = []
-    components << prefix if prefix.present?
+
+    if prefix.present?
+      if not prefix.include?(".")
+        components << "#{prefix}."
+      else
+        components << prefix
+      end
+    end
+
     components << fname if fname.present?
-    components << minitial if minitial.present?
+
+    if minitial.present?
+      if minitial.length < 2
+        components << "#{minitial}."
+      else
+        components << minitial
+      end
+    end
+
     components << lname if lname.present?
-    components << suffix if suffix.present?
+    components << ", #{suffix}" if suffix.present?
     components.join(" ").strip
   end
 
