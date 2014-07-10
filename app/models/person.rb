@@ -66,16 +66,49 @@ class Person < ActiveRecord::Base
     return me if me and me.credentials and password == me.credentials.password
   end
   
+  def self.is_name_prefix?(text)
+    possibles = %w(mr mrs ms miss dr professor prof)
+    result = possibles.include?(text.gsub(/[.]*/, "").downcase) if text.present?
+  end
+
+  def self.is_name_suffix?(text)
+    possibles = %w(esq phd jr iii ii)
+    result = possibles.include?(text.gsub(/[.]*/, "").downcase) if text.present?
+  end
+
   def self.name_components(name)
     res = {}
-    components = name.split(" ")
-    res[:fname] = components[0]
-    if components.length == 3
-      res[:minitial] = components[1]
-      res[:lname] = components[2]
+    component = ""
+    components = name.gsub(/,/, " ").gsub(/  /, " ").split(" ") rescue [name]
+    num_parts = components.length
+    component = components.shift
+
+    # What kind of thing is this?
+    if is_name_prefix?(component)
+      res[:prefix] = component
+      res[:fname] = components.shift
     else
-      res[:lname] = components[1]
+      res[:fname] = component
     end
+
+    # Next up, middle initial or last name.
+    # If only one word remains, that's the last name
+    if components.length == 1
+      res[:lname] = components.shift
+    elsif components.length > 0
+      # At least 2 words remain. We might have middle names, prefixes, suffixes, etc.
+      components.reverse!
+      component = components.shift
+      if is_name_suffix?(component)
+        res[:suffix] = component
+        res[:lname] = components.shift
+      else
+        res[:lname] = component
+      end
+      res[:minitial] = components.shift
+    end
+
+    res[:minital] = res[:minitial].gsub(/[.]/, "") if res[:minitial].present?
     res
   end
 
@@ -139,17 +172,21 @@ class Person < ActiveRecord::Base
 
   def name
     components = []
+    components << prefix if prefix.present?
     components << fname if fname.present?
     components << minitial if minitial.present?
     components << lname if lname.present?
+    components << suffix if suffix.present?
     components.join(" ").strip
   end
 
   def name=(incoming_name)
     components = self.class.name_components(incoming_name)
+    self.prefix = components[:prefix]
     self.fname = components[:fname]
-    self.lname = components[:lname]
     self.minitial = components[:minitial]
+    self.lname = components[:lname]
+    self.suffix = components[:suffix]
   end
 
   def age
