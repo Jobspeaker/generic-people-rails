@@ -193,7 +193,7 @@ class Person < ActiveRecord::Base
 
     components << lname if lname.present?
     components << ", #{suffix}" if suffix.present?
-    components.join(" ").strip
+    components.join(" ").strip.gsub(/ ,/, ",")
   end
 
   def name=(incoming_name)
