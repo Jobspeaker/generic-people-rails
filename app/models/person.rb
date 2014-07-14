@@ -108,7 +108,7 @@ class Person < ActiveRecord::Base
       res[:minitial] = components.shift
     end
 
-    res[:minital] = res[:minitial].gsub(/[.]/, "") if res[:minitial].present?
+    res[:minitial] = res[:minitial].gsub(/[.]/, "") if res[:minitial].present?
     res
   end
 
