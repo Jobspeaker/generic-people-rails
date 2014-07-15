@@ -18,7 +18,7 @@ class Member < ActiveRecord::Base
   before_save :ensure_uuid
 
   def update_last_login
-    last_logins << LastLogin.create(:person => self, :moment => DateTime.now)
+    last_logins << LastLogin.create(:member => self, :moment => DateTime.now)
   end
 
   def make_uuid
