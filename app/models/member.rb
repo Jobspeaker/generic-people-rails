@@ -4,6 +4,11 @@ class Member < ActiveRecord::Base
   has_many :last_logins
 
   delegate :name, :to => :person, :allow_nil => true
+  delegate :fname, :to => :person, :allow_nil => true
+  delegate :lname, :to => :person, :allow_nil => true
+  delegate :minitial, :to => :person, :allow_nil => true
+  delegate :prefix, :to => :person, :allow_nil => true
+  delegate :suffix, :to => :person, :allow_nil => true
   delegate :human_name, :to => :person , :allow_nil => true
   delegate :message_name, :to => :person, :allow_nil => true
   delegate :location, :to => :person, :allow_nil => true
