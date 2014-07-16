@@ -12,6 +12,12 @@ class Email < ActiveRecord::Base
     self.people.first rescue nil
   end
 
+  def member
+    p = person
+    m = p.member if p.present?
+    m
+  end
+
   def force_address_to_lowercase
     self.address = self.address.downcase if self.address.present?
   end
