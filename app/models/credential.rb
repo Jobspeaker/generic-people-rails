@@ -4,24 +4,26 @@ class Credential < ActiveRecord::Base
   has_many :permissions
   has_many :api_tokens
 
-  def self.authenticate(email, password)
-    email_object = Email.find_by_address(email)
-    email_id = email_object.id if email_object
+  def self.authenticate(address, password)
+    authenticated = false
+
+    email = Email.find_by(address: address)
+    if email
+      creds = self.where(email: email)
+      if creds.length > 0
+        
     self.where(email_id: email_id, password: password).first if email_id
   end
 
-  def self.sign_up(email_address,password,hash = {})
-    email_object = Email.find_by_address(email_address)
-    return authenticate(email_address, password) if email_object && self.where(email_id: email_object.id).length
-
+  def self.sign_up(address, password, hash = {})
+    return self.authenticate(address, password) if Email.find_by(address: address)
     email = Email.find_or_create_by(address: email_address)
-
-    person = Person.create(hash.slice(:fname, :lname, :minitial, :birthdate))
+    person   = Person.create(hash.slice(:name, :birthdate)) if hash.has_key?(:name)
+    person ||= Person.create(hash.slice(:fname, :lname, :minitial, :birthdate))
     person.emails << email
-
     member = Member.create(person: person)
     
-    self.create(email: email,password: password, member: member)
+    self.create(email: email, password: password, member: member)
   end
 
   # User in the hash is already externally authenticated by facebook, google+, etc.
@@ -31,10 +33,12 @@ class Credential < ActiveRecord::Base
   # the new provider.  This probably requires more thought.
   def self.authenticate_oauth(hash)
     email = Email.find_or_create_by(:address => hash[:email])
-    cred = self.find_or_create_by(email_id: email.id)
-    cred.provider ||= hash[:provider]
-    cred.uid ||= hash[:uid]
+    existing_member = email.member
+    cred = self.find_or_create_by(email: email, provider: hash[:provider], uid: hash[:uid])
+
+    # Make up a password: but only if there isn't already one there!
     cred.password ||= SecureRandom.hex(30)
+    cred.member ||= existing_member
     cred.save
 
     if not cred.member
