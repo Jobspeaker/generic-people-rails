@@ -10,9 +10,16 @@ class Credential < ActiveRecord::Base
     email = Email.find_by(address: address)
     if email
       creds = self.where(email: email)
-      if creds.length > 0
-        
-    self.where(email_id: email_id, password: password).first if email_id
+
+      # If there are multiple credentials, see if any of them are the right one.
+      creds.each do |cred|
+        if cred.password == password
+          authenticated = true
+          break;
+        end
+      end
+    end
+    authenticated
   end
 
   def self.sign_up(address, password, hash = {})
