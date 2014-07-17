@@ -5,7 +5,7 @@ class Credential < ActiveRecord::Base
   has_many :api_tokens
 
   def self.authenticate(address, password)
-    authenticated = false
+    authenticated = nil
 
     if address.present?
       email = Email.find_by(address: Email.canonicalize_address(address))
@@ -15,7 +15,7 @@ class Credential < ActiveRecord::Base
         # If there are multiple credentials, see if any of them are the right one.
         creds.each do |cred|
           if cred.password == password
-            authenticated = true
+            authenticated = cred
             break
           end
         end
