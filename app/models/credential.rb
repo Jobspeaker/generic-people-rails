@@ -7,9 +7,10 @@ class Credential < ActiveRecord::Base
   def self.authenticate(address, password)
     authenticated = false
 
-    email = Email.find_by(address: address)
-    if email
-      creds = self.where(email: email)
+    if address.present?
+      email = Email.find_by(address: Email.canonicalize_address(address))
+      if email
+        creds = self.where(email: email)
 
       # If there are multiple credentials, see if any of them are the right one.
       creds.each do |cred|
@@ -23,8 +24,10 @@ class Credential < ActiveRecord::Base
   end
 
   def self.sign_up(address, password, hash = {})
+    address = Email.canonicalize_address(address)
+    return false if not address.present?
     return self.authenticate(address, password) if Email.find_by(address: address)
-    email = Email.find_or_create_by(address: email_address)
+    email = Email.create(address: email_address)
     person   = Person.create(hash.slice(:name, :birthdate)) if hash.has_key?(:name)
     person ||= Person.create(hash.slice(:fname, :lname, :minitial, :birthdate))
     person.emails << email

@@ -2,7 +2,7 @@ class Email < ActiveRecord::Base
   belongs_to :label
   has_and_belongs_to_many :people
 
-  before_save :force_address_to_lowercase
+  before_save :canonicalize_address
 
   def admin_object_name
     self.address
@@ -18,8 +18,12 @@ class Email < ActiveRecord::Base
     m
   end
 
-  def force_address_to_lowercase
-    self.address = self.address.downcase if self.address.present?
+  def self.canonicalize_address(addr)
+    addr.strip.downcase if not addr.blank?
+  end
+
+  def canonicalize_address
+    self.address = self.class.canonicalize_address(self.address)
   end
 
   def label=(text_or_label)
