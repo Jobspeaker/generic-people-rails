@@ -28,7 +28,7 @@ class Credential < ActiveRecord::Base
     address = Email.canonicalize_address(address)
     return false if not address.present?
     return self.authenticate(address, password) if Email.find_by(address: address)
-    email = Email.create(address: email_address)
+    email = Email.create(address: address)
     person   = Person.create(hash.slice(:name, :birthdate)) if hash.has_key?(:name)
     person ||= Person.create(hash.slice(:fname, :lname, :minitial, :birthdate))
     person.emails << email
