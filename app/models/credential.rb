@@ -71,6 +71,10 @@ class Credential < ActiveRecord::Base
   def allow_to(name)
     self.permissions.find_or_create_by_permission_label_id(PermissionLabel.get(name).id)
   end
+  
+  def as_json
+    super(:only => [:id , :member_id , :created_at])
+  end
 
   def to_s
     "#<Credential: #{self.id}: #{self.email.address}>"
