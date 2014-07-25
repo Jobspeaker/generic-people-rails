@@ -72,7 +72,7 @@ class Credential < ActiveRecord::Base
     self.permissions.find_or_create_by_permission_label_id(PermissionLabel.get(name).id)
   end
   
-  def as_json(options=nil)
+  def as_json(options={})
     super(:only => [:id , :member_id , :created_at])
   end
 
