@@ -69,7 +69,7 @@ class Address < ActiveRecord::Base
   end
 
   def update_from_postal
-    return if @already_geocoded or not self.postal.present?
+    return if @already_geocoded or self.postal.blank?
     r = Geocoder.search(self.postal)
     if r.length == 0
       self.errors[:postal] = "Couldn't locate postal code"
