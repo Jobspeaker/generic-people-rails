@@ -8,8 +8,8 @@ class Credential < ActiveRecord::Base
     authenticated = nil
 
     if address.present?
-      email = Email.find_by(address: Email.canonicalize_address(address))
-      if email
+      emails = Email.where(address: Email.canonicalize_address(address))
+      emails.each do |email|
         creds = self.where(email: email)
 
         # If there are multiple credentials, see if any of them are the right one.
@@ -19,6 +19,7 @@ class Credential < ActiveRecord::Base
             break
           end
         end
+        break if authenticated
       end
     end
     authenticated
