@@ -2,6 +2,25 @@
 
 This project rocks and uses MIT-LICENSE.
 
+GenericPeopleRails (GPR) provides models for the following:
+
+    * address: a possibly geocoded physical and/or postal address.
+    * carrier: a phone or data service provider.
+    * contact: contact information for a person.
+    * credential: authentication and/or authorization info for a member.
+    * device: a digital device belonging to a person.
+    * email: a person's email address.
+    * label: a descriptor for something, suitable for display or use in referencing.
+    * last_login: the last time a member 'logged in' to something.
+    * member: the part of a person able to participate in relationships with other things.
+    * nickname: nickname for a person.
+    * permission: denotes a capability for a credential and associated member.
+    * permission_label: descriptor for a permission.
+    * person: a human.
+    * phone: a person's communication device.
+
+These models can be subclasses as necessary to provide application-specific features.
+
 == INSTALL
 
 add the following to your Gemfile:
