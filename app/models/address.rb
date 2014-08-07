@@ -35,7 +35,7 @@ class Address < ActiveRecord::Base
     return unless string != line1
     return unless string != oneline
 
-    r = Geocoder.search(string)
+    r = Geocoder.search(string) rescue nil
     @already_geocoded = true
 
     if r.length == 0
