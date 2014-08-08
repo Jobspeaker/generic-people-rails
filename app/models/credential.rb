@@ -40,22 +40,25 @@ class Credential < ActiveRecord::Base
 
   # User in the hash is already externally authenticated by facebook, google+, etc.
   # Credential.authenticate_oauth finds or creates a Jammcard credential that matches
-  # the email address of the authenticated user.  If a user has authenticated once with
-  # facebook, and then they want to authenticate with google+, we allow that, but ignore
-  # the new provider.  This probably requires more thought.
+  # the oauth token of the authenticated user.  If a user has authenticated once with
+  # facebook, and then they want to authenticate with google+, we allow that.
   def self.authenticate_oauth(hash)
-    email = Email.find_or_create_by(:address => hash[:email])
-    existing_member = email.member
-    cred = self.find_or_create_by(email: email, provider: hash[:provider], uid: hash[:uid])
-    
+    return false if hash[:uid].blank? or hash[:provider].blank?
+    cred = self.find_or_create_by(uid: hash[:uid], provider: hash[:provider])
+    email = Email.find_or_create_by(address: hash[:email]) if not hash[:email].blank?
+
+    # We have a credential, either new, or old.  If we have an email, set the email
+    # in the credential.
+    cred.email = email if email
+    cred.save
+
     # Make up a password: but only if there isn't already one there!
     cred.password ||= SecureRandom.hex(30)
-    cred.member ||= existing_member
     cred.save
 
     if not cred.member
       person = Person.create(hash[:person].slice(:fname, :lname, :minitial, :birthdate))
-      person.emails << email
+      person.emails << email if email
 
       member = Member.create(person: person)
       cred.member = member
