@@ -36,3 +36,14 @@ And finally, migrate your database:
      rake db:migrate
 
 This will install all the tables that GenericPeopleRails needs.
+
+You'll also want to add this to your_app/config/initializers/models_load.rb:
+
+# Ensure that every model of interest is loaded.
+Rails.application.eager_load!
+Rails::Engine.descendants.each { |d| d.eager_load! rescue nil }
+
+TODO: make a rake task (or add to the gpr install task) creation of models_load.rb,
+but pay attention to making it load things in the proper order.  Maybe in the same
+order that engines are mounted?  Which I guess would only be possible for engines
+mounted prior to gpr getting installed.
