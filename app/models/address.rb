@@ -38,7 +38,7 @@ class Address < ActiveRecord::Base
     r = Geocoder.search(string) rescue nil
     @already_geocoded = true
 
-    if r.length == 0
+    if not r or r.length == 0
       self.errors[:address] = "No locations found."
       self.line1 = string
     else
@@ -70,8 +70,8 @@ class Address < ActiveRecord::Base
 
   def update_from_postal
     return if @already_geocoded or self.postal.blank?
-    r = Geocoder.search(self.postal)
-    if r.length == 0
+    r = Geocoder.search(self.postal) rescue nil
+    if not r or r.length == 0
       self.errors[:postal] = "Couldn't locate postal code"
     else
       res = r[0]
