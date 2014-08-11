@@ -3,6 +3,8 @@ class Address < ActiveRecord::Base
   has_and_belongs_to_many :people
   require 'carmen'
   require 'geocoder'
+#  geocoded_by :oneline, latitude: :lat, longitude: :lon
+#  after_validation :geocode
 
   def address
     oneline
@@ -30,6 +32,15 @@ class Address < ActiveRecord::Base
     write_attribute(:label_id, l.id)
   end
 
+  def update_lat_lon(google_geocode=nil)
+    google_geocode ||= Geocoder.search(self.oneline) rescue nil
+    if google_geocode and google_geocode.length > 0
+      info = google_geocode.first
+      self.lat = info.geometry["location"]["lat"] rescue nil
+      self.lon = info.geometry["location"]["lng"] rescue nil
+    end
+  end
+
   def address=(string)
     return unless not string.blank? and not postal_changed?
     return unless string != line1
@@ -43,6 +54,7 @@ class Address < ActiveRecord::Base
       self.line1 = string
     else
       res = r[0]
+      self.update_lat_lon(res)
       self.line1 = res.street_address.to_s
       self.line2 = nil
       self.city = res.city.to_s
@@ -72,9 +84,11 @@ class Address < ActiveRecord::Base
     return if @already_geocoded or self.postal.blank?
     r = Geocoder.search(self.postal) rescue nil
     if not r or r.length == 0
+      return
       self.errors[:postal] = "Couldn't locate postal code"
     else
       res = r[0]
+      self.update_lat_lon(res)
       self.city = res.city
       self.state = res.state_code
       self.country = res.country_code
@@ -86,6 +100,7 @@ class Address < ActiveRecord::Base
   end
 
   def oneline
+    [line1, line2, city, state, postal].compact.join(",")
     "#{line1}, #{city}, #{state}"
   end
 
