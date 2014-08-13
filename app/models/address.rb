@@ -32,10 +32,9 @@ class Address < ActiveRecord::Base
     write_attribute(:label_id, l.id)
   end
 
-  def update_lat_lon(google_geocode=nil)
-    google_geocode ||= Geocoder.search(self.oneline) rescue nil
-    if google_geocode and google_geocode.length > 0
-      info = google_geocode.first
+  def update_lat_lon(info=nil)
+    info ||= Geocoder.search(self.oneline).first rescue nil
+    if info
       self.lat = info.geometry["location"]["lat"] rescue nil
       self.lon = info.geometry["location"]["lng"] rescue nil
     end
