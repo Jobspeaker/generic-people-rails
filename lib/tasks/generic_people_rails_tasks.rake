@@ -31,6 +31,9 @@ namespace :gpr do
         raw_photo = Media.create(basetype: "image", mimetype: "image/jpeg", caption: "profile pic",
                                  short_desc: "#{h['first']}'s Profile Picture", resource_uri: h['picture'],
                                  member_id: member.id)
+      end
+      has_profile_pic_class = ((Kernel.const_get("ProfilePhoto")).class == Class) rescue nil
+      if has_profile_pic_class
         profile_pic = ProfilePhoto.create(media_id: raw_photo.id, member_id: member.id)
       end
     end
