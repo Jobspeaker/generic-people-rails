@@ -33,7 +33,9 @@ class Credential < ActiveRecord::Base
     person   = Person.create(hash.slice(:name, :birthdate)) if hash.has_key?(:name)
     person ||= Person.create(hash.slice(:fname, :lname, :minitial, :birthdate))
     person.emails << email
-    member = Member.create(person: person)
+    Rails.logger.info("CREDENTIAL: SIGNUP: BEFORE MEMBER CALL, person: #{person}")
+    member = Member.create(person_id: person.id)
+    Rails.logger.info("CREDENTIAL: SIGNUP: AFTER MEMBER CALL, member: #{member}")
     
     self.create(email: email, password: password, member: member)
   end
