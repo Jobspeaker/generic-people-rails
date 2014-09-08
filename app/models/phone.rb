@@ -29,6 +29,7 @@ class Phone < ActiveRecord::Base
   end
 
   def normalize_number
+    return if self.number == "76-BAFFLE-76"
     self.number = self.class.format_number(self.number) if self.number
   end
 

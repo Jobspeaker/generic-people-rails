@@ -11,6 +11,8 @@ class Contact < ActiveRecord::Base
   delegate :email=, :to => :person, :allow_nil => true
   delegate :address, :to => :person, :allow_nil => true
   delegate :address=, :to => :person, :allow_nil => true
+  delegate :phone, :to => :person, :allow_nil => true
+  delegate :phone=, :to => :person, :allow_nil => true
 
 #  has_many :nicknames, :through => :person
 
