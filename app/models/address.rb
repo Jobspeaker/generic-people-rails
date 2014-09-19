@@ -100,9 +100,12 @@ class Address < ActiveRecord::Base
     [line1, city, postal].join(" ").strip rescue ""
   end
 
-  def oneline
-    [line1, line2, city, state, postal].compact.join(",")
-    "#{line1}, #{city}, #{state}"
+  def oneline(options={})
+    if options[:full]
+      return [line1, line2, city, state, postal].compact.join(", ").gsub(/, ,/, ",")
+    else
+      return "#{line1}, #{city}, #{state}"
+    end
   end
 
   def self.parse(string)
