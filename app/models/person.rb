@@ -219,8 +219,13 @@ class Person < ActiveRecord::Base
   end
 
   def email=(eaddr)
+    if eaddr.is_a?(Email)
+      emails << eaddr unless emails.include?(eaddr)
+      return
+    end
+
     e = emails.first rescue nil
-    e ||= Email.create(:label => Label.get("Work"))
+    e ||= Email.create(label: Label.get("Work"))
     emails << e unless emails.include?(e)
     e.address = eaddr.downcase.strip
     e.save
@@ -247,6 +252,11 @@ class Person < ActiveRecord::Base
   end
 
   def phone=(number)
+    if number.is_a?(Phone)
+      phones << number unless phones.include?(number)
+      return
+    end
+
     if not number.blank?
       p = phones.first rescue nil
       p ||= Phone.create(:label => Label.get("Work"))
@@ -314,7 +324,7 @@ class Person < ActiveRecord::Base
   end
 
   def address=(new_address)
-    if new_address.class == Address
+    if new_address.is_a?(Address)
       self.addresses << new_address unless self.addresses.include?(new_address)
     elsif new_address.class == Integer || new_address.class == Fixnum || new_address.class == Bignum
       a = Address.find(new_address)
