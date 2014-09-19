@@ -16,8 +16,4 @@ class PermissionLabel < ActiveRecord::Base
   def to_s
     name.to_s.gsub(/_/," ").capitalize
   end
-
-  def admin_object_name
-    self.to_s
-  end
 end

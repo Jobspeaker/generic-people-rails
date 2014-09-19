@@ -1,8 +1,12 @@
 class Credential < ActiveRecord::Base
   belongs_to :member
-  belongs_to :email
-  has_many :permissions
   has_many :api_tokens
+
+  belongs_to :email
+  accepts_nested_attributes_for :email
+
+  has_many :permissions
+  accepts_nested_attributes_for :permissions
 
   def self.authenticate(address, password)
     authenticated = nil

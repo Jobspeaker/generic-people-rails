@@ -1,12 +1,22 @@
 require 'zodiac'
 
 class Person < ActiveRecord::Base
-  has_one :member
+  has_one :member                       # that's not unreasonable.  has_two :members would be strange.
+
   has_and_belongs_to_many :addresses
+  accepts_nested_attributes_for :addresses
+
   has_and_belongs_to_many :phones
+  accepts_nested_attributes_for :phones
+
   has_and_belongs_to_many :emails
+  accepts_nested_attributes_for :emails
+
   has_and_belongs_to_many :nicknames
+  accepts_nested_attributes_for :nicknames
+
   has_many :devices
+  accepts_nested_attributes_for :devices
 
   def self.lookup(name)
     person   = self.find_by(self.name_components(name))
