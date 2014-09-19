@@ -1,6 +1,9 @@
 class Member < ActiveRecord::Base
   belongs_to :person
+
   has_many :credentials
+  accepts_nested_attributes_for :credentials
+
   has_many :last_logins
 
   delegate :name, :to => :person, :allow_nil => true
