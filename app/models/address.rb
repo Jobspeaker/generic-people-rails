@@ -1,5 +1,7 @@
 class Address < ActiveRecord::Base
   belongs_to :label
+  accepts_nested_attributes_for :label
+
   has_and_belongs_to_many :people
   require 'carmen'
   require 'geocoder'
