@@ -12,7 +12,15 @@ class Credential < ActiveRecord::Base
   accepts_nested_attributes_for :permissions
   
   def password
-    @password ||= Password.new(salt)
+    if @password
+      @password
+    else
+      if salt
+        Password.new(salt)
+      else 
+        nil #hmmm happens with fb login...
+      end
+    end
   end
 
   def password=(new_password)
