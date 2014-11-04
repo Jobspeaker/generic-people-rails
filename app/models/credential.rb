@@ -1,4 +1,7 @@
+require 'bcrypt'
 class Credential < ActiveRecord::Base
+  include BCrypt
+    
   belongs_to :member
   has_many :api_tokens
 
@@ -7,6 +10,15 @@ class Credential < ActiveRecord::Base
 
   has_many :permissions
   accepts_nested_attributes_for :permissions
+  
+  def password
+    @password ||= Password.new(salt)
+  end
+
+  def password=(new_password)
+    @password = Password.create(new_password)
+    self.salt = @password
+  end
 
   def self.authenticate(address, password)
     authenticated = nil
