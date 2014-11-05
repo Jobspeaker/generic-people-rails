@@ -6,7 +6,7 @@ class AddSaltedPassword < ActiveRecord::Migration
     #create salt for existing passwords
     Credential.all.each do |cred|
       pw = BCrypt::Password.create(cred.attributes["password"])
-      cred.update(salt: pw, password: nil)
+      cred.update(salt: pw) #, password: nil)
     end
     
   end
