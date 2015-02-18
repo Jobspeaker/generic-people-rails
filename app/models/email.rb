@@ -1,8 +1,12 @@
 class Email < ActiveRecord::Base
   belongs_to :label
   has_and_belongs_to_many :people
+  has_many :credentials
 
-  before_save :canonicalize_address
+  validates_uniqueness_of :address, message: "Already exists."
+  validates_format_of :address, with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i, on: :create
+  
+  before_validation :canonicalize_address
 
   def admin_object_name
     self.address

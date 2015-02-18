@@ -32,7 +32,7 @@ class Credential < ActiveRecord::Base
     authenticated = nil
 
     if address.present?
-      emails = Email.where(address: Email.canonicalize_address(address))
+      emails = Email.where(address: address)
       emails.each do |email|
         creds = self.where(email: email)
 
@@ -46,52 +46,75 @@ class Credential < ActiveRecord::Base
         break if authenticated
       end
     end
+    if authenticated
+      authenticated.member.update_last_login
+    end
     authenticated
   end
 
+  # Need to allow to return error messages
+  # So returns array
+  # [object, errors]  
   def self.sign_up(address, password, hash = {})
-    address = Email.canonicalize_address(address)
-    return false if not address.present?
-    return self.authenticate(address, password) if Email.find_by(address: address)
-    email = Email.create(address: address)
-    person   = Person.create(hash.slice(:name, :birthdate)) if hash.has_key?(:name)
-    person ||= Person.create(hash.slice(:fname, :lname, :minitial, :birthdate))
-    person.emails << email
-    Rails.logger.info("CREDENTIAL: SIGNUP: BEFORE MEMBER CALL, person: #{person}")
-    member = Member.create(person_id: person.id)
-    Rails.logger.info("CREDENTIAL: SIGNUP: AFTER MEMBER CALL, member: #{member}")
-    
-    self.create(email: email, password: password, member: member)
+    Member.transaction do
+      # validate email
+      email = Email.new(address: address)
+      return [nil, email.errors.full_messages.to_sentence] if !email.valid?
+      # check if exists
+      return [self.authenticate(address, password)] if Email.find_by(address: address)
+      #validate person details
+      person   = Person.new(hash.slice(:name, :birthdate)) if hash.has_key?(:name)
+      person ||= Person.new(hash.slice(:fname, :lname, :minitial, :birthdate))    
+      return [nil, person.errors.full_messages.to_sentence] if !person.valid?
+
+      email.save
+      person.emails << email
+      person.save
+      member = Member.create(person_id: person.id, status: GenericPeopleRails::Config.default_member_status)
+      [self.create(email: email, password: password, member: member)]
+    end
   end
 
   # User in the hash is already externally authenticated by facebook, google+, etc.
-  # Credential.authenticate_oauth finds or creates a Jammcard credential that matches
+  # Credential.authenticate_oauth finds or creates a credential that matches
   # the oauth token of the authenticated user.  If a user has authenticated once with
   # facebook, and then they want to authenticate with google+, we allow that.
+  # Need to allow to return error messages
+  # So returns array
+  # [object, errors]
   def self.authenticate_oauth(hash)
-    return false if hash[:uid].blank? or hash[:provider].blank?
+    return [nil, "incorrect credentials"] if hash[:uid].blank? or hash[:provider].blank?
+    
     cred = self.find_or_create_by(uid: hash[:uid], provider: hash[:provider])
     email = Email.find_or_create_by(address: hash[:email]) if not hash[:email].blank?
 
     # We have a credential, either new, or old.  If we have an email, set the email
     # in the credential.
     cred.email = email if email
-    cred.save
-
     # Make up a password: but only if there isn't already one there!
     cred.password ||= SecureRandom.hex(30)
     cred.save
-
+    
+    #check to see if member account exists for this email
     if not cred.member
-      person = Person.create(hash[:person].slice(:fname, :lname, :minitial, :birthdate))
+      email.credentials.each do |other_crd|
+        if other_crd != cred
+          if !other_crd.member.nil?
+            return [nil, "An account already exists with this email address."]
+          end
+        end
+      end
+      # if still here, ok to create- only gets name from weblogin 
+      person_hash = {person: {name: hash[:name]}}
+      person = Person.create(person_hash[:person].slice(:name))
       person.emails << email if email
 
-      member = Member.create(person: person)
+      member = Member.create(person: person, status: GenericPeopleRails::Config.default_member_status)
       cred.member = member
       cred.save
     end
 
-    cred
+    [cred]
   end
 
   def can(name)
