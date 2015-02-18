@@ -23,6 +23,23 @@ module GenericPeopleRails
       def confirmed_status
         @confirmed_status || 'confirmed'
       end
+      
+      # layout to use in controller actions
+      def layout=(layout)
+        @layout = layout
+      end
+      def layout
+        @layout
+      end
+      
+      # helper method for checking if user logged in or not
+      def logged_in_helper=(logged_in_helper)
+        @logged_in_helper = logged_in_helper
+      end
+      def logged_in_helper
+        @logged_in_helper
+      end
+            
     end
   end
 end

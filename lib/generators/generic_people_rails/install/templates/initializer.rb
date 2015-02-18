@@ -10,5 +10,10 @@ GenericPeopleRails.config do |config|
   #config.active_status = 'active'
   #config.confirmed_status = 'confirmed'
   
+  # add a layout to the views
+  #config.layout = 'signup'
+  
+  # keep this here so root_path and other main_app urls in your layouts work.
+  GenericPeopleRails::ApplicationController.send(:include, Rails.application.routes.url_helpers)
   
 end

@@ -1,0 +1,8 @@
+<h1>Welcome <%=@member.name%>!</h1>
+  
+<p>Please 
+<%= link_to "click here", confirm_members_url(email: @member.email_address, token: @cred.uid, uid: @member.id) %>
+to confirm your email address.
+</p>
+
+<p>Thank you</p>
