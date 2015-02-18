@@ -1,11 +1,13 @@
 class Member < ActiveRecord::Base
-  belongs_to :person
+  alias :super_destroy :destroy
+  
+  belongs_to :person, dependent: :destroy
   accepts_nested_attributes_for :person
 
-  has_many :credentials
+  has_many :credentials, dependent: :destroy
   accepts_nested_attributes_for :credentials
 
-  has_many :last_logins
+  has_many :last_logins, dependent: :destroy
 
   delegate :name, :to => :person, :allow_nil => true
   delegate :fname, :to => :person, :allow_nil => true
@@ -20,6 +22,7 @@ class Member < ActiveRecord::Base
   delegate :set_location, :to => :person, :allow_nil => true
 
   before_save :ensure_uuid
+  after_create :send_welcome
 
   def update_last_login
     last_logins << LastLogin.create(:member => self, :moment => DateTime.now)
@@ -32,4 +35,30 @@ class Member < ActiveRecord::Base
   def ensure_uuid
     (self.uuid = make_uuid if not self.uuid.present?) rescue nil
   end
+  
+  # checks to see if account has been destroyed. 
+  # only useful if using acts_paranoid
+  def is_cancelled?
+    !self.deleted_at.nil?
+  end
+    
+  #overrides destroy to preserve data
+  # use acts_paranoid config to change behavior
+  def destroy
+    if GenericPeopleRails::Config.acts_paranoid
+      self.update(deleted_at: Time.now, status: GenericPeopleRails::Config.cancelled_status)
+    else
+      self.super_destroy
+    end
+  end
+  
+  #final kill - way to work around acts_paranoid for administrators
+  def kill
+    self.super_destroy
+  end
+  
+  private
+   def send_welcome
+     GprMailer.welcome(self).deliver if defined?(ActionMailer) && GenericPeopleRails::Config.send_welcome  
+   end
 end

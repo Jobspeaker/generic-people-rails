@@ -24,6 +24,13 @@ module GenericPeopleRails
         @confirmed_status || 'confirmed'
       end
       
+      def cancelled_status=(status)
+        @cancelled_status = status
+      end
+      def cancelled_status
+        @cancelled_status || 'cancelled'
+      end
+      
       # layout to use in controller actions
       def layout=(layout)
         @layout = layout
@@ -39,6 +46,22 @@ module GenericPeopleRails
       def logged_in_helper
         @logged_in_helper
       end
+      
+      # true/false if you want the member model to be saved when deleted
+      def acts_paranoid=(acts_paranoid)
+        @acts_paranoid = acts_paranoid
+      end
+      def acts_paranoid
+        @acts_paranoid || true
+      end
+      
+      # true/false if you want the welcome email to be sent after member creation
+      def send_welcome=(send_welcome)
+        @send_welcome = send_welcome
+      end
+      def send_welcome
+        @send_welcome || true
+      end      
             
     end
   end

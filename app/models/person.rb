@@ -15,7 +15,7 @@ class Person < ActiveRecord::Base
   has_and_belongs_to_many :nicknames
   accepts_nested_attributes_for :nicknames
 
-  has_many :devices
+  has_many :devices, dependent: :destroy
   accepts_nested_attributes_for :devices
 
   def self.lookup(name)

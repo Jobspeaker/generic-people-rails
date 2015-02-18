@@ -8,7 +8,7 @@ class Credential < ActiveRecord::Base
   belongs_to :email
   accepts_nested_attributes_for :email
 
-  has_many :permissions
+  has_many :permissions, dependent: :destroy
   accepts_nested_attributes_for :permissions
   
   def password

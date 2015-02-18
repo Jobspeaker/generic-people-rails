@@ -92,7 +92,7 @@ module GenericPeopleRails
       def check_logged_in
         logged_in_helper = GenericPeopleRails.config.logged_in_helper
         is_logged_in = true
-        if logged_in_helper
+        if !logged_in_helper.blank?
           is_logged_in = send(logged_in_helper)
         end
         #for these actions, the user can't be logged in
@@ -109,8 +109,10 @@ module GenericPeopleRails
             @msg = "Valid account not found."
           else
             @cred = creds.first
-            #if cred.member.deleted_at.nil?
-            
+            if GenericPeopleRails::Config.acts_paranoid && @cred.member.is_cancelled?
+              @msg = "Your account has been closed. Please contact the site's administrator"
+              @cred = nil
+            end
           end
         else  
           @msg = "Valid account not found."
