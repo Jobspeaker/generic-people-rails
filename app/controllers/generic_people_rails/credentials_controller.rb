@@ -29,15 +29,15 @@ module GenericPeopleRails
           if @member.id == uid.to_i
             @member.update(status: 'confirmed')
             GprMailer.confirmed(@member).deliver        
-            flash[:notice] = "Thank you, your account has been confirmed!"
+            flash.now[:notice] = "Thank you, your account has been confirmed!"
           else
-            flash[:alert] = "Valid account not found"
+            flash.now[:alert] = "Valid account not found"
           end
         else
-          flash[:alert] = "Valid account not found"
+          flash.now[:alert] = "Valid account not found"
         end
       else
-        flash[:alert] = "Valid account not found"
+        flash.now[:alert] = "Valid account not found"
       end
       redirect_to main_app.root_url
     end    

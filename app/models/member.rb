@@ -53,9 +53,8 @@ class Member < ActiveRecord::Base
   
   #final kill - way to work around acts_paranoid for administrators
   def kill
+    self.email.destroy  #this doens't go away otherwise
     self.super_destroy
-    # kill email too. 
-    self.email.destroy
   end
 
 end

@@ -40,6 +40,12 @@ class Credential < ActiveRecord::Base
         creds.each do |cred|
           if cred.password == password
             authenticated = cred
+            
+            # this is here because if someone signs up, then connects the same
+            # email using facebook, they have to use their original password
+            # to connect and now we need to link their other creds to the right member
+            # account.
+            cred.email.credentials.update_all(member_id: cred.member.id)
             break
           end
         end
@@ -140,11 +146,10 @@ class Credential < ActiveRecord::Base
     super(:only => [:id, :member_id, :created_at])
   end
   
-  private
-   def send_welcome
-     if self.member.credentials.length == 1 && defined?(ActionMailer) && GenericPeopleRails::Config.send_welcome 
-       GprMailer.welcome(self.member, self).deliver  
-     end
-   end
+  def send_welcome
+    if self.member.credentials.length == 1 && defined?(ActionMailer) && GenericPeopleRails::Config.send_welcome 
+      GprMailer.welcome(self.member, self).deliver  
+    end
+  end
    
 end
