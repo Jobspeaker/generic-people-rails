@@ -77,9 +77,15 @@ module GenericPeopleRails
             flash.now[:alert] = "Invalid User Account."
           else
             if params[:password] == params[:password_confirm]
-              @cred.update(password: params[:password])
+              # set creds all with same password, make sure member field is populated (side effect of oauth).
+              @cred.email.credentials.each do |c|
+                c.member_id = @cred.email.member.id
+                c.password = params[:password]
+                c.save
+              end
+              #@cred.update(password: params[:password])
               GprMailer.password_was_reset(@member).deliver if defined?(ActionMailer)        
-              flash.now[:notice] = "Congratulations You reset your password. Click Sign In!"
+              flash.now[:notice] = "Congratulations You reset your password."
             else
               flash.now[:alert] = "Your passwords do not match!"
             end

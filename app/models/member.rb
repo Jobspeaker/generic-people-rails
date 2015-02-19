@@ -22,7 +22,6 @@ class Member < ActiveRecord::Base
   delegate :set_location, :to => :person, :allow_nil => true
 
   before_save :ensure_uuid
-  after_create :send_welcome
 
   def update_last_login
     last_logins << LastLogin.create(:member => self, :moment => DateTime.now)
@@ -55,10 +54,8 @@ class Member < ActiveRecord::Base
   #final kill - way to work around acts_paranoid for administrators
   def kill
     self.super_destroy
+    # kill email too. 
+    self.email.destroy
   end
-  
-  private
-   def send_welcome
-     GprMailer.welcome(self).deliver if defined?(ActionMailer) && GenericPeopleRails::Config.send_welcome  
-   end
+
 end
