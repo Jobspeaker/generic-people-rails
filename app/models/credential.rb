@@ -120,7 +120,7 @@ class Credential < ActiveRecord::Base
         person = Person.create(person_hash[:person].slice(:name))
         person.emails << email if email
 
-        member = Member.create(person: person, status: GenericPeopleRails::Config.default_member_status)
+        member = Member.create(person: person, status: GenericPeopleRails::Config.active_status)
         cred.member = member
         cred.save
         cred.send_welcome

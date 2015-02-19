@@ -5,7 +5,9 @@ GenericPeopleRails.config do |config|
   # confirm their email address.
   # a pending status requires the user to confirm 
   # their email before gaining access to the app
+  # note - fb sign up users default to active_status as email confirmation is not required
   #config.default_member_status = 'pending'
+  
   #config.active_status = 'active'
   #config.confirmed_status = 'confirmed'
   #config.cancelled_status = 'cancelled'
