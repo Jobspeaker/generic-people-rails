@@ -69,9 +69,14 @@ class Credential < ActiveRecord::Base
       return [nil, email.errors.full_messages.to_sentence] if !email.valid?
       # check if exists
       return [self.authenticate(address, password)] if Email.find_by(address: address)
-      #validate person details
-      person   = Person.new(hash.slice(:name, :birthdate)) if hash.has_key?(:name)
-      person ||= Person.new(hash.slice(:fname, :lname, :minitial, :birthdate))    
+      #validate person details, strong params. ugh
+      if hash.has_key?(:name)
+        person_params = hash.permit(:name, :birthdate)
+      else
+        person_params = hash.permit(:fname, :lname, :minitial, :birthdate)
+      end
+      person   = Person.new(person_params) 
+      #person ||= Person.new(hash.slice(:fname, :lname, :minitial, :birthdate))    
       return [nil, person.errors.full_messages.to_sentence] if !person.valid?
 
       email.save

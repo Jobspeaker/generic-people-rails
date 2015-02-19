@@ -24,5 +24,6 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency "zodiac"
   s.add_runtime_dependency "carmen"
   s.add_runtime_dependency "carmen-demonyms"
+  s.add_runtime_dependency "bcrypt"
   s.add_development_dependency "sqlite3"
 end

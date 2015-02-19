@@ -4,7 +4,7 @@ if defined?(ActionMailer)
     def welcome(member, cred)
       @member = member
       @cred = cred
-      mail(to: @member.email_address, subject: 'Welcome, please confirm your email!')
+      mail(to: @member.email.address, subject: 'Welcome, please confirm your email!')
     end
     
     def resend_confirmation(member, cred)
