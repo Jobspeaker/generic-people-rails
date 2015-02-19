@@ -97,7 +97,7 @@ module GenericPeopleRails
     private
       def check_logged_in
         logged_in_helper = GenericPeopleRails.config.logged_in_helper
-        is_logged_in = true
+        is_logged_in = false
         if !logged_in_helper.blank?
           is_logged_in = send(logged_in_helper)
         end
