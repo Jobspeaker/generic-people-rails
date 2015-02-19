@@ -96,13 +96,7 @@ module GenericPeopleRails
     
     private
       def check_logged_in
-        logged_in_helper = GenericPeopleRails.config.logged_in_helper
-        is_logged_in = false
-        if !logged_in_helper.blank?
-          is_logged_in = send(logged_in_helper)
-        end
-        #for these actions, the user can't be logged in
-        if is_logged_in
+        if authenticated? 
           redirect_to main_app.root_url
         end
       end

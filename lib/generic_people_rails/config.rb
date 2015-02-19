@@ -39,14 +39,6 @@ module GenericPeopleRails
         @layout
       end
       
-      # helper method for checking if user logged in or not
-      def logged_in_helper=(logged_in_helper)
-        @logged_in_helper = logged_in_helper
-      end
-      def logged_in_helper
-        @logged_in_helper
-      end
-      
       # true/false if you want the member model to be saved when deleted
       def acts_paranoid=(acts_paranoid)
         @acts_paranoid = acts_paranoid

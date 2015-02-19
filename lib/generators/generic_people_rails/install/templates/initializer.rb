@@ -13,9 +13,6 @@ GenericPeopleRails.config do |config|
   # add a layout to the views
   #config.layout = 'signup'
   
-  # add your helper method to allow checking of logged in status
-  #config.logged_in_helper = 'logged_in?'
-  
   # allows member data to be kept in the database when destroyed
   # default = true
   # uncomment to turn off
