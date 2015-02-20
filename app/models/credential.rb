@@ -84,7 +84,7 @@ class Credential < ActiveRecord::Base
       person.save
       
       member = Member.create(person_id: person.id, status: GenericPeopleRails::Config.default_member_status)
-      cred = self.create(email: email, password: password, member: member)
+      cred = self.create(email: email, password: password, member: member, uid: SecureRandom.uuid)
       cred.send_welcome
       [cred]      
     end

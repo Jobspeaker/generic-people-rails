@@ -28,6 +28,7 @@ module GenericPeopleRails
           @member = cred.member
           if @member.id == uid.to_i
             @member.update(status: 'confirmed')
+            useremail.update(confirmed: true)
             GprMailer.confirmed(@member).deliver        
             flash.now[:notice] = "Thank you, your account has been confirmed!"
           else
