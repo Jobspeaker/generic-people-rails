@@ -10,10 +10,10 @@ module GenericPeopleRails
       end
     end
     
-    initializer 'generic_people_rails.action_controller' do |app|
-      ActiveSupport.on_load :action_controller do
-        helper GprHelper
-      end
-    end
+    #initializer 'generic_people_rails.action_controller' do |app|
+    #  ActiveSupport.on_load :action_controller do
+    #    helper GprHelper
+    #  end
+    #end
   end
 end

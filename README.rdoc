@@ -47,3 +47,21 @@ TODO: make a rake task (or add to the gpr install task) creation of models_load.
 but pay attention to making it load things in the proper order.  Maybe in the same
 order that engines are mounted?  Which I guess would only be possible for engines
 mounted prior to gpr getting installed.
+
+== UPGRADE
+
+Changes were made from the original gpr. You'll need to upgrade in conjunction with
+the weblogin gem.
+
+Create a new your_app/config/initializers/generic_people_rails.rb
+  (see the generators templates for details)
+
+Migrate your database (adds salt to the passwords and paranoia on the member model)
+      rake db:migrate
+      
+For the mailers to work, be sure you have some default options set up in your environment files:
+      config.action_mailer.default_url_options = { :host => 'http://www.twicketer.com' }
+      config.action_mailer.default_options = {from: 'notice@twicketer.com'}
+
+Add the style class to your application.css
+      *= require 'generic_people_rails'

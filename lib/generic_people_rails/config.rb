@@ -36,7 +36,7 @@ module GenericPeopleRails
         @layout = layout
       end
       def layout
-        @layout
+        @layout || 'application'
       end
       
       # true/false if you want the member model to be saved when deleted

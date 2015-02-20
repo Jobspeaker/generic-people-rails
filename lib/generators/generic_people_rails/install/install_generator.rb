@@ -18,6 +18,12 @@ module GenericPeopleRails
           "  mount GenericPeopleRails::Engine => '/' \n"
         end
       end
+      
+      def add_style
+        insert_into_file "app/assets/stylesheets/application.css.scss", :before => "*/" do
+          "\n *= require 'generic_people_rails'\n\n"
+        end
+      end
 
     end
   end
