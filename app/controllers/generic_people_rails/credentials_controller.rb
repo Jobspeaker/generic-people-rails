@@ -82,7 +82,7 @@ module GenericPeopleRails
             if params[:password] == params[:password_confirm]
               # set creds all with same password, make sure member field is populated (side effect of oauth).
               @cred.email.credentials.each do |c|
-                c.member_id = @cred.email.member.id
+                c.member_id = @member.id
                 c.password = params[:password]
                 c.save
               end
