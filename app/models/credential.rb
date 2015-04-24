@@ -116,19 +116,23 @@ class Credential < ActiveRecord::Base
         email.credentials.each do |other_crd|
           if other_crd != cred
             if !other_crd.member.nil?
-              return [nil, "An account already exists with this email address."]
+              #return [nil, "An account already exists with this email address."]
+              cred.update_attribute(:member_id, other_crd.member_id)
+              break
             end
           end
         end
-        # if still here, ok to create- only gets name from weblogin 
-        person_hash = {person: {name: hash[:name]}}
-        person = Person.create(person_hash[:person].slice(:name))
-        person.emails << email if email
+        if !cred.member 
+          # if still here, ok to create- only gets name from weblogin 
+          person_hash = {person: {name: hash[:name]}}
+          person = Person.create(person_hash[:person].slice(:name))
+          person.emails << email if email
 
-        member = Member.create(person: person, status: GenericPeopleRails::Config.active_status)
-        cred.member = member
-        cred.save
-        cred.send_welcome
+          member = Member.create(person: person, status: GenericPeopleRails::Config.active_status)
+          cred.member = member
+          cred.save
+          cred.send_welcome
+        end
       end
 
       [cred]
