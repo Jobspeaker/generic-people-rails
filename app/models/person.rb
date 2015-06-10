@@ -236,8 +236,8 @@ class Person < ActiveRecord::Base
 
     e = emails.first rescue nil
     e ||= Email.create(label: Label.get("Work"))
+    e.address = eaddr
     emails << e unless emails.include?(e)
-    e.address = eaddr.downcase.strip
     e.save
   end
 
