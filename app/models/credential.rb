@@ -68,15 +68,20 @@ class Credential < ActiveRecord::Base
       email = Email.new(address: address)
       return [nil, email.errors.full_messages.to_sentence] if !email.valid?
       # check if exists
-      return [self.authenticate(address, password)] if Email.find_by(address: address)
+      e = Email.find_by(address: address)
+      if e and  self.find_by(email: e)
+        cred = self.authenticate(address, password)
+        return [nil, "Password doesn't match existing user"] if not cred
+        return [cred]
+      end
+
       #validate person details, strong params. ugh
       if hash.has_key?(:name)
         person_params = hash.permit(:name, :birthdate)
       else
         person_params = hash.permit(:fname, :lname, :minitial, :birthdate)
       end
-      person   = Person.new(person_params) 
-      #person ||= Person.new(hash.slice(:fname, :lname, :minitial, :birthdate))    
+      person   = Person.new(person_params)
       return [nil, person.errors.full_messages.to_sentence] if !person.valid?
 
       email.save
@@ -86,7 +91,7 @@ class Credential < ActiveRecord::Base
       member = Member.create(person_id: person.id, status: GenericPeopleRails::Config.default_member_status)
       cred = self.create(email: email, password: password, member: member, uid: SecureRandom.uuid)
       cred.send_welcome
-      [cred]      
+      [cred]
     end
   end
 
