@@ -76,10 +76,10 @@ class Credential < ActiveRecord::Base
       end
 
       #validate person details, strong params. ugh
-      if hash.has_key?(:name)
-        person_params = hash.permit(:name, :birthdate)
+      if hash.respond_to?(:permit)
+        person_params = hash.permit(:name, :birthdate, :fname, :lname, :minitial)
       else
-        person_params = hash.permit(:fname, :lname, :minitial, :birthdate)
+        person_params = hash.slice(:name, :birthdate, :fname, :lname, :minitial)
       end
       person   = Person.new(person_params)
       return [nil, person.errors.full_messages.to_sentence] if !person.valid?
