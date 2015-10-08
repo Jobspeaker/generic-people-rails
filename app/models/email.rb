@@ -23,7 +23,7 @@ class Email < ActiveRecord::Base
   end
 
   def self.canonicalize_address(addr)
-    addr.strip.downcase if not addr.blank?
+    addr.strip if not addr.blank?
   end
 
   def canonicalize_address
