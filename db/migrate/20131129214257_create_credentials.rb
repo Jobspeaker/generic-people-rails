@@ -6,7 +6,7 @@ class CreateCredentials < ActiveRecord::Migration
       t.string :password
       t.string :provider, index: true
       t.string :uid, index: true, limit: 64
-
+      t.string :salt
       t.timestamps
     end
   end
