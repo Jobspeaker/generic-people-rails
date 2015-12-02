@@ -3,7 +3,7 @@ class Credential < ActiveRecord::Base
   include BCrypt
     
   belongs_to :member
-  has_many :api_tokens
+  has_many :api_tokens, dependent: :destroy
 
   belongs_to :email
   accepts_nested_attributes_for :email

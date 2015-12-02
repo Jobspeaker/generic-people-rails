@@ -1,7 +1,7 @@
 class Member < ActiveRecord::Base
   alias :super_destroy :destroy
   
-  belongs_to :person, dependent: :destroy
+  belongs_to :person #, dependent: :destroy
   accepts_nested_attributes_for :person
 
   has_many :credentials, dependent: :destroy
@@ -53,8 +53,10 @@ class Member < ActiveRecord::Base
   
   #final kill - way to work around acts_paranoid for administrators
   def kill
+    self.last_logins.destroy_all
     self.email.destroy if self.email  #this doesn't go away otherwise
     self.super_destroy
+    self.person.destroy if self.person  #i'm sure this leaves a lot of other stuff lying around. devices, phones, etc.
   end
 
 end
