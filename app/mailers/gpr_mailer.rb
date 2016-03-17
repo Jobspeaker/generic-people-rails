@@ -33,7 +33,7 @@ if defined?(ActionMailer)
       mail(to: @member.email.address, subject: 'Reset your password.')
     end
     
-    def password_was_reset(member)
+    def password_was_reset(member, cred)
       setup(member, cred)
       mail(to: @member.email.address, subject: 'Your password has been reset.')
     end    
