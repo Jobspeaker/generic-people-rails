@@ -65,6 +65,7 @@ module GenericPeopleRails
     
     def reset_password
       @params = params
+      @success = false
       
       #check for credentials in forgot password email
       @member = Member.find(params[:uid])
@@ -89,11 +90,15 @@ module GenericPeopleRails
               #@cred.update(password: params[:password])
               GprMailer.password_was_reset(@member, @cred).deliver if defined?(ActionMailer)        
               flash.now[:notice] = "Congratulations You reset your password."
+              @success = true
             else
               flash.now[:alert] = "Your passwords do not match!"
             end
           end
         end
+      end
+      if @success
+        redirect_to "/"
       end
     end
     
