@@ -3,7 +3,8 @@ class Phone < ActiveRecord::Base
   belongs_to :carrier
   has_and_belongs_to_many :people
 
-  before_save :normalize_number
+  before_validation :normalize_number
+  #before_save :normalize_number
   
   def self.find_by_number(incoming)
     self.find_all_by_number(incoming).first
@@ -16,6 +17,7 @@ class Phone < ActiveRecord::Base
 
   def self.format_number(digits_and_stuff)
     formatted = digits_and_stuff
+    formatted.gsub!(" ", "") #remove extra spaces
     if formatted
       formatted = formatted[2..100].strip if formatted.starts_with?("+1")
       if formatted[0] != "+"
