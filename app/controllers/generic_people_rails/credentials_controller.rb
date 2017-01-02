@@ -12,7 +12,7 @@ module GenericPeopleRails
         if @cred
           @cred.update(uid: SecureRandom.uuid)
           GprMailer.resend_confirmation(@cred.member, @cred).deliver if defined?(ActionMailer)     
-          flash[:notice] = "Your confirmation email has been resent." 
+          flash.now[:notice] = "Your confirmation email has been resent." 
         end
       end
     end
@@ -30,15 +30,15 @@ module GenericPeopleRails
             @member.update(status: 'confirmed')
             useremail.update(confirmed: true)
             GprMailer.confirmed(@member).deliver        
-            flash[:notice] = "Thank you, your account has been confirmed!"
+            flash.now[:notice] = "Thank you, your account has been confirmed!"
           else
-            flash[:alert] = "Valid account not found"
+            flash.now[:alert] = "Valid account not found"
           end
         else
-          flash[:alert] = "Valid account not found"
+          flash.now[:alert] = "Valid account not found"
         end
       else
-        flash[:alert] = "Valid account not found"
+        flash.now[:alert] = "Valid account not found"
       end
       redirect_to main_app.root_url
     end    
@@ -53,31 +53,32 @@ module GenericPeopleRails
           #if cred.member.deleted_at.nil?
             @cred.update(uid: SecureRandom.uuid)
             GprMailer.reset_password(@cred.member, @cred).deliver if defined?(ActionMailer)        
-            flash[:notice] = "An email has been sent to you with instructions on resetting your password."
+            flash.now[:notice] = "An email has been sent to you with instructions on resetting your password."
           #else
             #flash.now[:error] = "Your account has been cancelled. Please contact an administrator"
           #end
         else
-          flash[:error] = "Valid account not found"
+          flash.now[:error] = "Valid account not found"
         end
       end
     end
     
     def reset_password
       @params = params
+      @success = false
       
       #check for credentials in forgot password email
       @member = Member.find(params[:uid])
       @cred = @member.credentials.find_by(uid: params[:token]) if @member
       if !(@member && @cred)
         #not the right guy
-        flash[:alert] = "Invalid User Account."
+        flash.now[:alert] = "Invalid User Account."
       else
         #form submit - process
         if params[:password] && params[:password_confirm] 
           id_mem = Member.find(params[:id])
           if id_mem != @member
-            flash[:alert] = "Invalid User Account."
+            flash.now[:alert] = "Invalid User Account."
           else
             if params[:password] == params[:password_confirm]
               # set creds all with same password, make sure member field is populated (side effect of oauth).
@@ -87,13 +88,17 @@ module GenericPeopleRails
                 c.save
               end
               #@cred.update(password: params[:password])
-              GprMailer.password_was_reset(@member).deliver if defined?(ActionMailer)        
-              flash[:notice] = "Congratulations You reset your password."
+              GprMailer.password_was_reset(@member, @cred).deliver if defined?(ActionMailer)        
+              flash.now[:notice] = "Congratulations You reset your password."
+              @success = true
             else
-              flash[:alert] = "Your passwords do not match!"
+              flash.now[:alert] = "Your passwords do not match!"
             end
           end
         end
+      end
+      if @success
+        redirect_to "/"
       end
     end
     

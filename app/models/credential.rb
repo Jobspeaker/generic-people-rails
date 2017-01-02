@@ -3,7 +3,7 @@ class Credential < ActiveRecord::Base
   include BCrypt
     
   belongs_to :member
-  has_many :api_tokens
+  has_many :api_tokens, dependent: :destroy
 
   belongs_to :email
   accepts_nested_attributes_for :email
@@ -63,31 +63,63 @@ class Credential < ActiveRecord::Base
   # [object, errors]  
   
   def self.sign_up(address, password, hash = {})
-    Member.transaction do
-      # validate email
-      email = Email.new(address: address)
-      return [nil, email.errors.full_messages.to_sentence] if !email.valid?
-      # check if exists
-      return [self.authenticate(address, password)] if Email.find_by(address: address)
-      #validate person details, strong params. ugh
-      if hash.has_key?(:name)
-        person_params = hash.permit(:name, :birthdate)
-      else
-        person_params = hash.permit(:fname, :lname, :minitial, :birthdate)
-      end
-      person   = Person.new(person_params) 
-      #person ||= Person.new(hash.slice(:fname, :lname, :minitial, :birthdate))    
-      return [nil, person.errors.full_messages.to_sentence] if !person.valid?
+    cred = nil
+    person = nil
+    member = nil
+    email = Email.find_by(address: address)
+    email ||= Email.new(address: address)
+    return [nil, email.errors.full_messages.to_sentence] if !email.valid?
 
-      email.save
-      person.emails << email
-      person.save
-      
-      member = Member.create(person_id: person.id, status: GenericPeopleRails::Config.default_member_status)
-      cred = self.create(email: email, password: password, member: member, uid: SecureRandom.uuid)
-      cred.send_welcome
-      [cred]      
+    # Validate person details, strong params.
+    if hash.respond_to?(:permit)
+      person_params = hash.permit(:name, :birthdate, :fname, :lname, :minitial)
+    else
+      person_params = hash.slice(:name, :birthdate, :fname, :lname, :minitial)
     end
+    person = email.person rescue nil
+    person ||= Person.new(person_params)
+    return [nil, person.errors.full_messages.to_sentence] if !person.valid?
+
+    # Make all creations atomic where possible.
+    Member.transaction do
+      # Check to see if this email is already in use.
+      e = email if email.id
+      member = e.member if e
+
+      # If in use, and there are any credential records, try to authenticate.
+      if e and  self.find_by(email: e)
+        msg = nil
+        cred = self.authenticate(address, password)
+
+        if not cred
+          # Try hard to understand what's happening.  If the user has signed up via linkedIn or Facebook,
+          # and then is re-signing up, let's tell them to login using those services.
+          creds = self.where(email: e)
+          has_pass = nil
+          providers = []
+          creds.each do |c|
+            if c.password or (c.respond_to?(:salt) and c.salt)
+              has_pass = c
+              break
+            else 
+              providers.push c.provider if c.provider
+            end
+          end
+
+          msg = "Password doesn't match existing user" if has_pass
+          msg = "You've never used a password - login with " + providers.to_sentence(two_words_connector: ' or ', last_word_connector: ', or ') if not providers.empty?
+          return [cred, msg]
+        end
+      end
+      email.save if not email.id
+      person.emails << email if not person.emails.include?(email)
+      person.save
+      member = Member.create(person_id: person.id, status: GenericPeopleRails::Config.default_member_status) if not member
+    end
+        
+    cred ||= self.create(email: email, password: password, member: member, uid: SecureRandom.uuid) if member and member.id
+    (cred.send_welcome rescue nil) if cred
+    [cred, cred ? cred.errors.full_messages.to_sentence : nil]
   end
 
   # User in the hash is already externally authenticated by facebook, google+, etc.
