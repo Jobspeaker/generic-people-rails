@@ -1,4 +1,4 @@
-class AddMemberDeletedAt < ActiveRecord::Migration
+class AddMemberDeletedAt < ActiveRecord::Migration[5.2]
   def change
     
     if !Member.column_names.include?("deleted_at") 
