@@ -10,14 +10,14 @@ Gem::Specification.new do |s|
   s.version     = GenericPeopleRails::VERSION
   s.authors     = ["Daniel Staudigel", "Brian J. Fox"]
   s.email       = ["developer@opuslogica.com"]
-  s.homepage    = "http://opuslogica.com/"
+  s.homepage    = "http://github.com/opuslogica/generic-people-rails"
   s.summary     = "Models and migrations for a membership network."
   s.description = "Creates all of the models and migrations for a full featured application that features members that are mostly people, including multiple and labeled forms of contact, credentials, credential providers, and the like."
 
   s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.rdoc"]
   s.test_files = Dir["test/**/*"]
 
-  s.add_runtime_dependency "rails", "~> 5"
+  # s.add_runtime_dependency "rails", "~> 5"
   s.add_runtime_dependency "foreigner", "~> 1.6.1"
   s.add_runtime_dependency "forgery"
   s.add_runtime_dependency "geocoder"
