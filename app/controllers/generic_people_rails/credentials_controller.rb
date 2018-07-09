@@ -1,7 +1,7 @@
 module GenericPeopleRails
   class CredentialsController < ApplicationController
     layout GenericPeopleRails::Config.layout
-    before_filter :check_logged_in, only: [:resend_confirmation, :forgot_password, :reset_password]
+    before_action :check_logged_in, only: [:resend_confirmation, :forgot_password, :reset_password]
     
     # for changing password
     def resend_confirmation
