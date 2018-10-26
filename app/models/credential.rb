@@ -62,12 +62,14 @@ class Credential < ActiveRecord::Base
   # So returns array
   # [object, errors]  
   
-  def self.sign_up(address, password, hash = {})
+  def self.sign_up(address, password, hash = {}, sendMail=true)
     cred = nil
     person = nil
     member = nil
     email = Email.find_by(address: address)
-    email ||= Email.new(address: address)
+    return [nil, "Account already exists. Please log in"] if email
+    
+    email = Email.new(address: address)
     return [nil, email.errors.full_messages.to_sentence] if !email.valid?
 
     # Validate person details, strong params.
@@ -118,7 +120,7 @@ class Credential < ActiveRecord::Base
     end
         
     cred ||= self.create(email: email, password: password, member: member, uid: SecureRandom.uuid) if member and member.id
-    (cred.send_welcome rescue nil) if cred
+    (cred.send_welcome rescue nil) if cred && sendMail
     [cred, cred ? cred.errors.full_messages.to_sentence : nil]
   end
 
