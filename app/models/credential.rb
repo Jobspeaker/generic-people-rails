@@ -72,7 +72,7 @@ class Credential < ActiveRecord::Base
     email = Email.new(address: address)
     return [nil, email.errors.full_messages.to_sentence] if !email.valid?
 
-    hash[:sendMail] = false if !hash[:sendMail].present?
+    hash[:sendMail] = true if !hash[:sendMail].present?
 
     # Validate person details, strong params.
     if hash.respond_to?(:permit)
@@ -136,7 +136,7 @@ class Credential < ActiveRecord::Base
   def self.authenticate_oauth(hash)
     return [nil, "incorrect credentials"] if hash[:uid].blank? or hash[:provider].blank?
     
-    hash[:sendMail] = false if !hash[:sendMail].present?
+    hash[:sendMail] = true if !hash[:sendMail].present?
     
     Member.transaction do
       email = Email.find_or_create_by(address: hash[:email]) # email required
