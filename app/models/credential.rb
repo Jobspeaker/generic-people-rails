@@ -62,7 +62,7 @@ class Credential < ActiveRecord::Base
   # So returns array
   # [object, errors]  
   
-  def self.sign_up(address, password, hash = {}, sendMail=true)
+  def self.sign_up(address, password, hash = {})
     cred = nil
     person = nil
     member = nil
@@ -71,6 +71,8 @@ class Credential < ActiveRecord::Base
     
     email = Email.new(address: address)
     return [nil, email.errors.full_messages.to_sentence] if !email.valid?
+
+    hash[:sendMail] = false if !hash[:sendMail].present?
 
     # Validate person details, strong params.
     if hash.respond_to?(:permit)
@@ -120,7 +122,7 @@ class Credential < ActiveRecord::Base
     end
         
     cred ||= self.create(email: email, password: password, member: member, uid: SecureRandom.uuid) if member and member.id
-    (cred.send_welcome rescue nil) if cred && sendMail
+    (cred.send_welcome rescue nil) if cred && hash[:sendMail]
     [cred, cred ? cred.errors.full_messages.to_sentence : nil]
   end
 
@@ -133,6 +135,8 @@ class Credential < ActiveRecord::Base
   # [object, errors]
   def self.authenticate_oauth(hash)
     return [nil, "incorrect credentials"] if hash[:uid].blank? or hash[:provider].blank?
+    
+    hash[:sendMail] = false if !hash[:sendMail].present?
     
     Member.transaction do
       email = Email.find_or_create_by(address: hash[:email]) # email required
@@ -165,7 +169,7 @@ class Credential < ActiveRecord::Base
           member = Member.create(person: person, status: GenericPeopleRails::Config.active_status)
           cred.member = member
           cred.save
-          cred.send_welcome
+          cred.send_welcome if hash[:sendMail]
         end
       end
 
