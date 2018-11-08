@@ -134,7 +134,8 @@ class Credential < ActiveRecord::Base
   # So returns array
   # [object, errors]
   def self.authenticate_oauth(hash)
-    return [nil, "incorrect credentials"] if hash[:uid].blank? or hash[:provider].blank?
+    return [nil, "incorrect credentials: :hash[:uid] not set"] if hash[:uid].blank?
+    return [nil, "incorrect credentials: :hash[:provider] is not set"] if hash[:provider].blank?
     
     hash[:sendMail] = true if !hash[:sendMail].present?
     
