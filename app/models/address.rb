@@ -56,7 +56,7 @@ class Address < ActiveRecord::Base
     else
       res = r[0]
       self.update_lat_lon(res)
-      self.line1 = res.street_address.to_s
+      self.line1 = res.street_address.to_s rescue string
       self.line2 = nil
       self.city = res.city.to_s
       self.state = res.state_code.to_s
