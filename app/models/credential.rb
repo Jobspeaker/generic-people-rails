@@ -67,9 +67,11 @@ class Credential < ActiveRecord::Base
     person = nil
     member = nil
     email = Email.find_by(address: address)
-    return [nil, "Account already exists. Please log in"] if email
+    # emails may exist for contacts that we convert to members
+    # these emails would not have credentials
+    return [nil, "Account already exists. Please log in"] if email && !email.credentials.empty?
     
-    email = Email.new(address: address)
+    email = Email.where(address: address).first_or_create
     return [nil, email.errors.full_messages.to_sentence] if !email.valid?
 
     send_mail = (hash[:send_mail].present? && hash[:send_mail] == "true") ? true : false
