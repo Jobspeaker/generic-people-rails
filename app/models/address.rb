@@ -4,9 +4,10 @@ class Address < ActiveRecord::Base
 
   has_and_belongs_to_many :people
   require 'carmen'
-  require 'geocoder'
-#  geocoded_by :oneline, latitude: :lat, longitude: :lon
-#  after_validation :geocode
+  require 'geocode'
+
+  geocoded_by :oneline, latitude: :lat, longitude: :lon
+  after_validation :geocode
 
   def address
     oneline
@@ -37,15 +38,20 @@ class Address < ActiveRecord::Base
   def update_lat_lon(info=nil)
     info ||= Geocoder.search(self.oneline).first rescue nil
     if info
-      self.lat = info.geometry["location"]["lat"] rescue nil
-      self.lon = info.geometry["location"]["lng"] rescue nil
+      if info.respond_to?(:latitude)
+        self.lat = info.latitude
+        self.lon = info.longitude
+      else
+        self.lat = info.geometry["location"]["lat"] rescue nil
+        self.lon = info.geometry["location"]["lng"] rescue nil
+      end
     end
   end
 
   def address=(string)
     return unless not string.blank? and not postal_changed?
     return unless string != line1
-    return unless string != oneline
+    return if (string == oneline() || string == online({full: true}))
 
     r = Geocoder.search(string) rescue nil
     @already_geocoded = true
@@ -56,12 +62,21 @@ class Address < ActiveRecord::Base
     else
       res = r[0]
       self.update_lat_lon(res)
-      self.line1 = res.street_address.to_s rescue string
-      self.line2 = nil
-      self.city = res.city.to_s
-      self.state = res.state_code.to_s
-      self.postal = res.postal_code.to_s
-      self.country = res.country_code.to_s
+      if res.respond_to?(:street)
+        self.line1 = res.house_number + " " + res.street
+        self.line2 = nil
+        c = Carmen::Country.coded(res.country) rescue nil
+        s = c.subregions.named(res.state) if c
+        self.state = s.code if s
+        self.postal = res.postal_code.to_s
+      else
+        self.line1 = res.street_address.to_s rescue string
+        self.line2 = nil
+        self.city = res.city.to_s
+        self.state = res.state_code.to_s
+        self.postal = res.postal_code.to_s
+        self.country = res.country_code.to_s
+      end
     end
 
     self.errors[:address] = "Too many matches." if r.length > 1

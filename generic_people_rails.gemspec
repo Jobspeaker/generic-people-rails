@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.version     = GenericPeopleRails::VERSION
   s.authors     = ["Daniel Staudigel", "Brian J. Fox"]
   s.email       = ["developer@opuslogica.com"]
-  s.homepage    = "http://opuslogica.com/"
+  s.homepage    = "http://github.com/opuslogica/generic-people-rails"
   s.summary     = "Models and migrations for a membership network."
   s.description = "Creates all of the models and migrations for a full featured application that features members that are mostly people, including multiple and labeled forms of contact, credentials, credential providers, and the like."
 
