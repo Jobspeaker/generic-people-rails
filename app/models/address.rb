@@ -4,7 +4,7 @@ class Address < ActiveRecord::Base
 
   has_and_belongs_to_many :people
   require 'carmen'
-  require 'geocode'
+  require 'geocoder'
 
   geocoded_by :oneline, latitude: :lat, longitude: :lon
   after_validation :geocode
