@@ -51,7 +51,7 @@ class Address < ActiveRecord::Base
   def address=(string)
     return unless not string.blank? and not postal_changed?
     return unless string != line1
-    return if (string == oneline() || string == online({full: true}))
+    return if (string == oneline() || string == oneline({full: true}))
 
     r = Geocoder.search(string) rescue nil
     @already_geocoded = true
