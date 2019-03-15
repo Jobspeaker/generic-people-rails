@@ -66,22 +66,21 @@ class Address < ActiveRecord::Base
       if res.respond_to?(:street)
         self.line1 = res.house_number + " " + res.street
         self.line2 = nil
-        c = Carmen::Country.coded(res.country) rescue nil
+        c = Carmen::Country.coded(res.country_code) rescue nil
         s = c.subregions.named(res.state) if c
-        self.state = s.code if s
-        self.postal = res.postal_code.to_s
+        self.state = s.code.to_s if s
       else
         self.line1 = res.street_address.to_s rescue string
         self.line2 = nil
-        self.city = res.city.to_s
         self.state = res.state_code.to_s
-        self.postal = res.postal_code.to_s
-        self.country = res.country_code.to_s
       end
+        self.city = res.city.to_s
+        self.postal = res.postal_code.to_s
+        self.country = res.country_code.to_s.upcase
     end
 
     self.errors[:address] = "Too many matches." if r.length > 1
-    self.oneline
+    self
   end
 
   def self.find_by_address(string)
