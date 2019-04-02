@@ -45,7 +45,7 @@ class Address < ActiveRecord::Base
   def address=(string)
     return unless not string.blank? and not postal_changed?
     return unless string != line1
-    return unless string != oneline
+    return if (string == oneline() || string == oneline({full: true}))
 
     r = Geocoder.search(string) rescue nil
     @already_geocoded = true
@@ -56,7 +56,8 @@ class Address < ActiveRecord::Base
     else
       res = r[0]
       self.update_lat_lon(res)
-      self.line1 = res.street_address.to_s
+      self.line1 = res.street_address.to_s rescue nil
+      self.line1 ||= res.display_name.split(",")[0] rescue nil
       self.line2 = nil
       self.city = res.city.to_s
       self.state = res.state_code.to_s
