@@ -9,3 +9,9 @@ test/dummy/.sass-cache
 *#
 /Gemfile.lock
 vendor
+*~
+\#*
+.\#*
+/\#*
+/.bundle
+*.DS_Store
