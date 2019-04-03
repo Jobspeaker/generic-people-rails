@@ -63,7 +63,7 @@ class Address < ActiveRecord::Base
       res = r[0]
       self.update_lat_lon(res)
       if res.respond_to?(:street)
-        self.line1 = res.house_number + " " + res.street
+        self.line1 = (res.house_number ? res.house_number + " " : "") + res.street
         self.line2 = nil
         c = Carmen::Country.coded(res.country_code) rescue nil
         s = c.subregions.named(res.state) if c
@@ -78,7 +78,10 @@ class Address < ActiveRecord::Base
         self.country = res.country_code.to_s.upcase
     end
 
-    self.errors[:address] = "Too many matches." if r.length > 1
+    if r.length > 1 
+      self.errors.messages[:address] = "Too many matches." if self.errors.respond_to?(:messages) 
+      self.errors[:address] = "Too many matches." if not self.errors.respond_to?(:messages)
+    end
     self
   end
 
