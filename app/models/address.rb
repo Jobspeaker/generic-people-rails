@@ -78,7 +78,10 @@ class Address < ActiveRecord::Base
         self.country = res.country_code.to_s.upcase
     end
 
-    self.errors[:address] = "Too many matches." if r.length > 1 and self.errors[:address] != []
+    if r.length > 1 
+      self.errors.messages[:address] = "Too many matches." if self.errors.respond_to?(:messages) 
+      self.errors[:address] = "Too many matches." if not self.errors.respond_to?(:messages)
+    end
     self
   end
 
