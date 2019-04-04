@@ -48,6 +48,14 @@ class Address < ActiveRecord::Base
     end
   end
 
+  def add_error(label, message)
+    if self.errors.respond_to?(:messages) 
+      self.errors.messages[label] = message
+    else
+      self.errors[label] = message
+    end
+  end
+  
   def address=(string)
     return unless not string.blank? and not postal_changed?
     return unless string != line1
@@ -57,7 +65,7 @@ class Address < ActiveRecord::Base
     @already_geocoded = true
 
     if not r or r.length == 0
-      self.errors[:address] = "No locations found."
+      self.add_error(address, "No locations found.")
       self.line1 = string
     else
       res = r[0]
@@ -78,10 +86,7 @@ class Address < ActiveRecord::Base
         self.country = res.country_code.to_s.upcase
     end
 
-    if r.length > 1 
-      self.errors.messages[:address] = "Too many matches." if self.errors.respond_to?(:messages) 
-      self.errors[:address] = "Too many matches." if not self.errors.respond_to?(:messages)
-    end
+    self.add_error(:address, "Too many matches") if r.length > 1 
     self
   end
 
@@ -103,7 +108,7 @@ class Address < ActiveRecord::Base
     r = Geocoder.search(self.postal) rescue nil
     if not r or r.length == 0
       return
-      self.errors[:postal] = "Couldn't locate postal code"
+      self.add_error(:postal, "Couldn't locate postal code")
     else
       res = r[0]
       self.update_lat_lon(res)
