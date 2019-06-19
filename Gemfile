@@ -10,6 +10,6 @@ gemspec
 
 gem 'foreigner', '~> 1.6.1'
 gem 'forgery'
-gem 'geocoder'
+gem 'geocoder', '~> 1.5.0'
 gem 'carmen-demonyms'
 gem 'bcrypt'
