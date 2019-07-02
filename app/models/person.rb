@@ -336,7 +336,7 @@ class Person < ActiveRecord::Base
   def address=(new_address)
     if new_address.is_a?(Address)
       self.addresses << new_address unless self.addresses.include?(new_address)
-    elsif new_address.class == Integer || new_address.class == Fixnum || new_address.class == Bignum
+    elsif %w(Integer Fixnum Bignum).include?(new_address.class.to_s)
       a = Address.find(new_address)
       self.addresses << a unless self.addresses.include?(a)
     else
