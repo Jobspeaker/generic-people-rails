@@ -228,8 +228,6 @@ class Person < ActiveRecord::Base
     self.birthdate.zodiac_sign if self.birthdate.present?
   end
   
-  ## this is so not a cool thing to do. 
-=begin
   def email=(eaddr)
     if eaddr.is_a?(Email)
       emails << eaddr unless emails.include?(eaddr)
@@ -242,7 +240,7 @@ class Person < ActiveRecord::Base
     emails << e unless emails.include?(e)
     e.save
   end
-=end
+
   def email_address=(eaddr)
     e = emails.first rescue nil
     e ||= Email.create(:label => Label.get("Work"))
