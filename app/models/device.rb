@@ -1,5 +1,5 @@
 class Device < ActiveRecord::Base
-  belongs_to :person
+  belongs_to :person, optional: true
   
   # for integration with other systems
   def user_id=(user_id)

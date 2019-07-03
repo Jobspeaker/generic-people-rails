@@ -1,6 +1,6 @@
 class Contact < ActiveRecord::Base
-  belongs_to :person
-  belongs_to :label
+  belongs_to :person, optional: true
+  belongs_to :label, optional: true
   accepts_nested_attributes_for :label
 
   delegate :fname, :to => :person, :allow_nil => true

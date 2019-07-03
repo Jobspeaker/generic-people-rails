@@ -1,5 +1,5 @@
 class Email < ActiveRecord::Base
-  belongs_to :label
+  belongs_to :label, optional: true
   has_and_belongs_to_many :people
   has_many :credentials, dependent: :destroy
 

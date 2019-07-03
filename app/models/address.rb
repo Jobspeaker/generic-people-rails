@@ -1,5 +1,5 @@
 class Address < ActiveRecord::Base
-  belongs_to :label
+  belongs_to :label, optional: true
   accepts_nested_attributes_for :label
 
   has_and_belongs_to_many :people

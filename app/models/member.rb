@@ -1,7 +1,7 @@
 class Member < ActiveRecord::Base
   alias :super_destroy :destroy
   
-  belongs_to :person #, dependent: :destroy
+  belongs_to :person, optional: true
   accepts_nested_attributes_for :person
 
   has_many :credentials, dependent: :destroy

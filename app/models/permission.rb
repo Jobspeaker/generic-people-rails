@@ -1,6 +1,6 @@
 class Permission < ActiveRecord::Base
-  belongs_to :credential
-  belongs_to :permission_label
+  belongs_to :credential, optional: true
+  belongs_to :permission_label, optional: true
 
   def self.lookup(name)
     candidates = self.joins(:permission_label).includes(:permission_label).where("permission_labels.name = ?", name)

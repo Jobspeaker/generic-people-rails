@@ -2,10 +2,10 @@ require 'bcrypt'
 class Credential < ActiveRecord::Base
   include BCrypt
     
-  belongs_to :member
+  belongs_to :member, optional: true
   has_many :api_tokens, dependent: :destroy
 
-  belongs_to :email
+  belongs_to :email, optional: true
   accepts_nested_attributes_for :email
 
   has_many :permissions, dependent: :destroy

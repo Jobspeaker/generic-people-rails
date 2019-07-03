@@ -1,6 +1,6 @@
 class Phone < ActiveRecord::Base
-  belongs_to :label
-  belongs_to :carrier
+  belongs_to :label, optional: true
+  belongs_to :carrier, optional: true
   has_and_belongs_to_many :people
 
   before_validation :normalize_number
